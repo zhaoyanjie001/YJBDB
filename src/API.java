@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.util.Vector;
 
-import lexer.Comparison;
+import parse.Comparison;
 import com.yjb.bufmgr.BufferManager;
 import com.yjb.catmgr.*;
 import com.yjb.idxmgr.IndexManager;
