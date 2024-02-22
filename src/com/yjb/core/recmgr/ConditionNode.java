@@ -1,9 +1,6 @@
 
 package com.yjb.core.recmgr;
-import com.yjb.core.bufmgr.*;
 import com.yjb.core.catmgr.*;
-import com.yjb.core.filmgr.*;
-import com.yjb.core.recmgr.*;
 import com.yjb.core.parse.Comparison;
 
 public class ConditionNode {

@@ -4,18 +4,15 @@ package com.yjb.core.idxmgr;
 import java.io.*;
 import java.util.Vector;
 
-import com.yjb.core.bufmgr.*;
 import com.yjb.core.catmgr.*;
-import com.yjb.core.filmgr.*;
 import com.yjb.core.recmgr.*;
 import com.yjb.core.common.Constants;
 public class IndexManager{
-	 
 
 	public static boolean createIndex(Index indexInfo){
 
     	indexInfo.PickInfo();
-        	BPlusTree thisTree=new BPlusTree(indexInfo/*,buf*/); 
+        	BPlusTree thisTree=new BPlusTree(indexInfo); 
         	String tableName=indexInfo.tableName;
         	try{   	
         		int tinb = Constants.BLOCKSIZE
@@ -75,6 +72,7 @@ public class IndexManager{
 		return true;
 	}
 	
+	@SuppressWarnings("removal")
 	public static Integer searchEqual(Index indexInfo, byte[] key) throws Exception{
     	indexInfo.PickInfo();
 		OffsetInfo off=new OffsetInfo();
@@ -169,6 +167,7 @@ public class IndexManager{
 	}
 
 	public static byte[] StringInttoByte(String num) {
+		@SuppressWarnings("removal")
 		Integer j = new Integer(num);
 		int i = j;
 		ByteArrayOutputStream boutput = new ByteArrayOutputStream();
@@ -188,6 +187,7 @@ public class IndexManager{
 	}
 	
 	public static byte[] StringFloattoByte(String num){
+		@SuppressWarnings("removal")
 		Float j = new Float(num);
 		float i = j;
 		ByteArrayOutputStream boutput = new ByteArrayOutputStream();
