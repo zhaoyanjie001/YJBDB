@@ -79,7 +79,7 @@ public class BPlusTree {
 			myRootBlock=newBlock;
 		}
 		
-		myindexInfo.rootNum = myRootBlock.blockoffset;
+		myindexInfo.rootNum = myRootBlock.blockOffset;
 		
 	}
 	
@@ -162,7 +162,7 @@ public class BPlusTree {
 			myRootBlock=newBlock;
 		}
 
-		myindexInfo.rootNum = myRootBlock.blockoffset;
+		myindexInfo.rootNum = myRootBlock.blockOffset;
 		
 	}
 	
@@ -238,8 +238,8 @@ public class BPlusTree {
 				keyNum++;
 				block.writeInt(1, keyNum);
 				block.writeData(9+POINTERLENGTH, branchKey,branchKey.length); 
-				block.writeInt(9, leftChild.block.blockoffset);
-				block.writeInt(9+POINTERLENGTH+branchKey.length, rightChild.block.blockoffset);
+				block.writeInt(9, leftChild.block.blockOffset);
+				block.writeInt(9+POINTERLENGTH+branchKey.length, rightChild.block.blockOffset);
 				
 				return this.block; 
 			}
@@ -272,7 +272,7 @@ public class BPlusTree {
 								9+POINTERLENGTH+(i+1)*(myindexInfo.columnLength+POINTERLENGTH),
 								
 								(MIN_CHILDREN_FOR_INTERNAL-1-i)*(myindexInfo.columnLength+POINTERLENGTH)+myindexInfo.columnLength);	
-						block.writeInternalKey(9+POINTERLENGTH+i*(myindexInfo.columnLength+POINTERLENGTH),branchKey,rightChild.block.blockoffset);				
+						block.writeInternalKey(9+POINTERLENGTH+i*(myindexInfo.columnLength+POINTERLENGTH),branchKey,rightChild.block.blockOffset);				
 						
 						half=true;
 						break;
@@ -295,7 +295,7 @@ public class BPlusTree {
 									(MAX_CHILDREN_FOR_INTERNAL-MIN_CHILDREN_FOR_INTERNAL-1-i)*(myindexInfo.columnLength+POINTERLENGTH));								
 							
 							
-							newBlock.writeInternalKey(9+POINTERLENGTH+i*(myindexInfo.columnLength+POINTERLENGTH),branchKey,rightChild.block.blockoffset);				
+							newBlock.writeInternalKey(9+POINTERLENGTH+i*(myindexInfo.columnLength+POINTERLENGTH),branchKey,rightChild.block.blockOffset);				
 							break;							
 						}	
 					}
@@ -349,14 +349,14 @@ public class BPlusTree {
 										9+POINTERLENGTH+(i+1)*(myindexInfo.columnLength+POINTERLENGTH), 
 										(keyNum-1-i)*(myindexInfo.columnLength+POINTERLENGTH));
 						
-						block.writeInternalKey(9+POINTERLENGTH+i*(myindexInfo.columnLength+POINTERLENGTH),branchKey,rightChild.block.blockoffset);									
+						block.writeInternalKey(9+POINTERLENGTH+i*(myindexInfo.columnLength+POINTERLENGTH),branchKey,rightChild.block.blockOffset);									
 						block.writeInt(1,keyNum);
 						
 						return null;
 					}					
 				}
 				if(i==keyNum-1){				
-						block.writeInternalKey(9+POINTERLENGTH+i*(myindexInfo.columnLength+POINTERLENGTH),branchKey,rightChild.block.blockoffset);									
+						block.writeInternalKey(9+POINTERLENGTH+i*(myindexInfo.columnLength+POINTERLENGTH),branchKey,rightChild.block.blockOffset);									
 						block.writeInt(1,keyNum);
 						
 						return null;							
@@ -498,7 +498,7 @@ public class BPlusTree {
 			for(int i=0;i<=keyNum;i++){
 				int pos=9+i*(myindexInfo.columnLength+POINTERLENGTH);
 				int ptr=block.readInt(pos);
-				if(ptr==blk.blockoffset){ 
+				if(ptr==blk.blockOffset){ 
 					System.arraycopy(block.data, 
 							9+POINTERLENGTH+(i-1)*(myindexInfo.columnLength+POINTERLENGTH), 
 							block.data, 
@@ -528,7 +528,7 @@ public class BPlusTree {
 					int j=0;
 					for(;j<parentKeyNum;j++){
 						int ppos=9+j*(myindexInfo.columnLength+POINTERLENGTH);
-						if(block.blockoffset==parentBlock.readInt(ppos)){ 
+						if(block.blockOffset==parentBlock.readInt(ppos)){ 
 							
 							sibling=parentBlock.readInt(ppos+POINTERLENGTH+myindexInfo.columnLength);
 							siblingBlock=BufferManager.getBlock(filename, sibling);
@@ -541,7 +541,7 @@ public class BPlusTree {
 							
 							if(siblingBlock.readInt(1)==MIN_CHILDREN_FOR_INTERNAL) return null;
 							
-							(new InternalNode(parentBlock,true)).exchange(rearrangeAfter(siblingBlock,unionKey),block.blockoffset);
+							(new InternalNode(parentBlock,true)).exchange(rearrangeAfter(siblingBlock,unionKey),block.blockOffset);
 							return null;
 					
 						}				
@@ -650,7 +650,7 @@ public class BPlusTree {
 				block.writeInt(1,MIN_FOR_LEAF);
 			    newBlock.writeInt(1,MAX_FOR_LEAF+1-MIN_FOR_LEAF);
 			    
-			    block.writeInt(9+MIN_FOR_LEAF*(myindexInfo.columnLength+8), newBlock.blockoffset);
+			    block.writeInt(9+MIN_FOR_LEAF*(myindexInfo.columnLength+8), newBlock.blockOffset);
 				
 			    int parentBlockNum;
 			    Block ParentBlock;
@@ -889,7 +889,7 @@ public class BPlusTree {
 			block.setKeydata(9+keyNum*(myindexInfo.columnLength+8), Key, blockOffset, offset);
 			keyNum++;
 			block.writeInt(1, keyNum);
-			block.writeInt(9+keyNum*(myindexInfo.columnLength+8), siblingBlock.blockoffset);
+			block.writeInt(9+keyNum*(myindexInfo.columnLength+8), siblingBlock.blockOffset);
 			
 			return changeKey;
 			
@@ -906,7 +906,7 @@ public class BPlusTree {
 			int offset=siblingBlock.readInt(13+siblingKeyNum*(myindexInfo.columnLength+8));
 			byte[] Key=siblingBlock.getBytes(17+siblingKeyNum*(myindexInfo.columnLength+8), myindexInfo.columnLength);
 			
-			siblingBlock.writeInt(9+siblingKeyNum*(myindexInfo.columnLength+8), block.blockoffset);
+			siblingBlock.writeInt(9+siblingKeyNum*(myindexInfo.columnLength+8), block.blockOffset);
 			
 			System.arraycopy(block.data, 9, block.data, 9+8+myindexInfo.columnLength, POINTERLENGTH+keyNum*(8+myindexInfo.columnLength));
 			block.setKeydata(9, Key, blockOffset, offset);
@@ -984,7 +984,7 @@ public class BPlusTree {
 					if(siblingBlock.readInt(1)==MIN_FOR_LEAF) return null;
 					
 					Block parentBlock=BufferManager.getBlock(filename, parentBlockNum);
-					(new InternalNode(parentBlock,true)).exchange(rearrangeAfter(siblingBlock),block.blockoffset);
+					(new InternalNode(parentBlock,true)).exchange(rearrangeAfter(siblingBlock),block.blockOffset);
 					return null;
 				}
 			}

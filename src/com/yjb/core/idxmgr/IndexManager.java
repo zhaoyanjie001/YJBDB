@@ -8,7 +8,7 @@ import com.yjb.core.bufmgr.*;
 import com.yjb.core.catmgr.*;
 import com.yjb.core.filmgr.*;
 import com.yjb.core.recmgr.*;
-
+import com.yjb.core.common.Constants;
 public class IndexManager{
 	 
 
@@ -18,7 +18,7 @@ public class IndexManager{
         	BPlusTree thisTree=new BPlusTree(indexInfo/*,buf*/); 
         	String tableName=indexInfo.tableName;
         	try{   	
-        		int tinb = Block.BLOCKSIZE
+        		int tinb = Constants.BLOCKSIZE
     				/ (4 + CatalogManager.getTupleLength(tableName));
         		int offset=1,count=1,blockOffset=0;
         		String type = CatalogManager.getType(indexInfo.tableName, indexInfo.attriName);

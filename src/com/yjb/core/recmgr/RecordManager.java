@@ -8,14 +8,14 @@ import com.yjb.core.catmgr.*;
 import com.yjb.core.filmgr.*;
 import com.yjb.core.recmgr.*;
 import com.yjb.core.idxmgr.*;
-
+import com.yjb.core.common.Constants;
 public class RecordManager {
 	static final char EMPTY = 0;
 
 	
 	public static Vector<tuple> getTuple(String tablename,
 			Vector<Integer> tupleOffsets) {
-		final int tinb = Block.BLOCKSIZE
+		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
 		Vector<tuple> res = new Vector<tuple>(0);
 		for (int ii = 0; ii < tupleOffsets.size(); ii++) {
@@ -50,7 +50,7 @@ public class RecordManager {
 	}
 
 		public static tuple getTuple(String tablename, int tupleOffset) {
-		final int tinb = Block.BLOCKSIZE
+		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
 		int blockoffset = tupleOffset / tinb;
 		Block block = BufferManager.getBlock(tablename, blockoffset);
@@ -96,7 +96,7 @@ public class RecordManager {
 	}
 
 	public static int insert(String tablename, tuple Tuple) {
-		final int tinb = Block.BLOCKSIZE
+		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
 		Block block1 = BufferManager.getBlock(tablename, 0);
 		int tupleoffset = block1.readInt(0);
@@ -153,7 +153,7 @@ public class RecordManager {
 	}
 
 public static Vector<tuple> select(String tablename, conditionNode condition) {
-		final int tinb = Block.BLOCKSIZE
+		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
 		Vector<tuple> res = new Vector<tuple>(0);
 		Block block = BufferManager.getBlock(tablename, 0);
@@ -239,7 +239,7 @@ public static Vector<tuple> select(String tablename, conditionNode condition) {
 	}
 
 	public static int delete(String tablename, conditionNode condition) {
-		final int tinb = Block.BLOCKSIZE
+		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
 		Block block1 = BufferManager.getBlock(tablename, 0);
 		block1.fix();

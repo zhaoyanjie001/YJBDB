@@ -6,19 +6,18 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import com.yjb.core.common.Constants;
+
 public class Block{
 
-    public static final int BLOCKSIZE = 4096;
-	static final boolean EMPTY = true;
-
-	String filename="";
-	public int blockoffset=0;
+	String fileName="";
+	public int blockOffset=0;
 	boolean dirty = false;
 	public boolean valid = false;
 	boolean fixed = false;
 	boolean reference_bit = false;
 
-	public byte[] data = new byte[BLOCKSIZE];
+	public byte[] data = new byte[Constants.BLOCKSIZE];
 
 
 	public byte[] readData() {
@@ -26,12 +25,12 @@ public class Block{
 		return data;
 	}
 
-	public boolean writeData(int byteoffset, byte inputdata[], int size) {
+	public boolean writeData(int byteOffset, byte inputdata[], int size) {
 
-		if (byteoffset + size >= 4096)
+		if (byteOffset + size >= 4096)
 			return false;
 		for (int i = 0; i < size; i++)
-			data[byteoffset + i] = inputdata[i];
+			data[byteOffset + i] = inputdata[i];
 		dirty = true;
 		reference_bit = true;
 		return true;
