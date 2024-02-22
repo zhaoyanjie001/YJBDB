@@ -1,9 +1,9 @@
 package catmgr;
 
 public class index{
-	public String indexName;//索引名，唯一标记索引
-	public String tableName;//表名
-	public String attriName;//属性名
+	public String indexName;
+	public String tableName;
+	public String attriName;
 	public int column;		//on which column the index is created
 	public int columnLength;//
 	public int rootNum;

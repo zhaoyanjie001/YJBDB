@@ -3,46 +3,19 @@ package idxmgr;
 
 import java.io.*;
 import java.util.Vector;
-import BUFFERMANAGER.*;
-import CATALOGMANAGER.*;
-import RECORDMANAGER.*;
+
+import com.yjb.core.bufmgr.*;
+import com.yjb.core.catmgr.*;
+import com.yjb.core.filmgr.*;
+import com.yjb.core.recmgr.*;
 
 public class IndexManager{
 	 
-//	public static BufferManager  buf;
-//		
-//	IndexManager(BufferManager buffer){
-//		buf=buffer;
-//	}
-		
-	//找出需要插入的索引值
-	/*private static byte[] getColumnValue(table  tableinfor,index  indexinfor, byte[] row){
-		
-		int s_pos = 0, f_pos = 0;	
-		for(int i= 0; i <= indexinfor.column; i++){ 
-			s_pos = f_pos;
-			//f_pos += tableinfor.attributes.get(i).length; //找出记录中第indexinfo。column列的长度为该列属性长度的字符串
-			//f_pos+=tableinfor.attrlist[i].length;
-			f_pos+=CatalogManager.getLength(indexinfor.tableName, i);
-		}
-		byte[] colValue=new byte[f_pos-s_pos];
-		for(int j=0;j<f_pos-s_pos;j++){//返回该子字符串，即为需要插入的索引字符串
-			colValue[j]=row[s_pos+j];
-		}
-		return colValue;
-	}*/
-	
-	//创建索引
-	public static boolean createIndex(index indexInfo){ //需要API提供表和索引信息结构
+
+	public static boolean createIndex(index indexInfo){
 
     	indexInfo.PickInfo();
-        	BPlusTree thisTree=new BPlusTree(indexInfo/*,buf*/); //创建一棵新树
-        	//开始正式建立索引
-        	//这里需要建立一个table的文件比较蛋疼！！！
-        	//---------------------------------------------------------------------------------------------------------------
-        	//---------------------------------------------------------------------------------------------------------------
-        	//---------------------------------------------------------------------------------------------------------------
-        	//---------------------------------------------------------------------------------------------------------------
+        	BPlusTree thisTree=new BPlusTree(indexInfo/*,buf*/); 
         	String tableName=indexInfo.tableName;
         	try{   	
         		int tinb = Block.BLOCKSIZE
@@ -67,11 +40,7 @@ public class IndexManager{
             		thisTree.insert(bkey,blockOffset,offset);
             		offset++;
         		}
-        		/*for(int blockOffset=0; blockOffset<=CatalogManager.getTupleNum(tableName);blockOffset++){
-        			for(int offset=1; offset<=tinb ;offset++){
-                		thisTree.insert(key, blockOffset, offset);
-        			}
-        		}*/
+        		
         	}catch(NullPointerException e){
         		//System.err.println("must not be null for key.");
         		return false;
@@ -81,14 +50,10 @@ public class IndexManager{
         		return false;
         	}
         	
-        	//indexInfo.rootNum=thisTree.myRootBlock.blockOffset;
-        	//CatalogManager.setIndexRoot(indexInfo.indexName, thisTree.myRootBlock.blockoffset);
         	
-        	//System.out.println("创建索引成功！");
         	return true;
 	}
 	
-	//删除索引，即删除索引文件
 	public static boolean dropIndex(String filename ){
 		filename+=".index";
 		File file = new File(filename);
@@ -96,31 +61,27 @@ public class IndexManager{
 		try{
 			if(file.exists())
 				if(file.delete())   {
-					System.out.println("索引文件已删除");
+					System.out.println("index deleted");
 					return true;}
 			else
-				//System.out.println("文件"+filename+"没有找到");
+				
 				return false;
         }catch(Exception   e){
             System.out.println(e.getMessage());
-            //System.out.println("删除索引失败！");
+            //System.out.println("deleted failed");
             return false;
         }
-			
-		//buf.setInvalid(filename);  //将buf中所有与此索引相关的缓冲块都置为无效
-		
-		//System.out.println("删除索引成功！");
+
 		return true;
 	}
 	
-	//等值查找
 	public static Integer searchEqual(index indexInfo, byte[] key) throws Exception{
     	indexInfo.PickInfo();
 		offsetInfo off=new offsetInfo();
 		try{
 			//Index inx=CatalogManager.getIndex(indexInfo.indexName);
-			BPlusTree thisTree=new BPlusTree(indexInfo,indexInfo.rootNum); //创建树访问结构（但不是新树）
-			off=thisTree.searchKey(key);  //找到位置信息体，返回给API
+			BPlusTree thisTree=new BPlusTree(indexInfo,indexInfo.rootNum); 
+			off=thisTree.searchKey(key);  
 			if(off==null) return null;
 			else{
 				return new Integer(off.offsetInfile.elementAt(0));
@@ -150,8 +111,8 @@ public class IndexManager{
 		Vector<Integer> res = new Vector<Integer>();
 		try{
 			//Index inx=CatalogManager.getIndex(indexInfo.indexName);
-			BPlusTree thisTree=new BPlusTree(indexInfo,indexInfo.rootNum); //创建树访问结构（但不是新树）
-			off=thisTree.searchKey(skey,ekey);  //找到位置信息体，返回给API
+			BPlusTree thisTree=new BPlusTree(indexInfo,indexInfo.rootNum);
+			off=thisTree.searchKey(skey,ekey); 
 			if(off==null) return null;
 			else{
 				for(int i=0;i<off.length;i++){
@@ -165,7 +126,6 @@ public class IndexManager{
 		}
 	}
 	
-	//插入新索引值，已有索引则更新位置信息
 	static public void insertKey(index indexInfo,String key,int blockOffset,int offset) throws Exception{
     	indexInfo.PickInfo();
 		String type = CatalogManager.getType(indexInfo.tableName, indexInfo.attriName);
@@ -179,17 +139,14 @@ public class IndexManager{
     			bkey = key.getBytes();
     		}
 			//Index inx=CatalogManager.getIndex(indexInfo.indexName);
-			BPlusTree thisTree=new BPlusTree(indexInfo,indexInfo.rootNum);//创建树访问结构（但不是新树）
-			thisTree.insert(bkey, blockOffset, offset);	//插入
-			//indexInfo.rootNum=thisTree.myRootBlock.blockOffset;//设置根块
-			//CatalogManager.setIndexRoot(indexInfo.indexName, thisTree.myRootBlock.blockoffset);
+			BPlusTree thisTree=new BPlusTree(indexInfo,indexInfo.rootNum);
+			thisTree.insert(bkey, blockOffset, offset);	
 		}catch(NullPointerException e){
 			System.err.println();
 		}
 		
 	}
 	
-	//删除索引值，没有该索引则什么也不做
 	static public void deleteKey(index indexInfo,String deleteKey) throws Exception{
     	indexInfo.PickInfo();
 		String type = CatalogManager.getType(indexInfo.tableName, indexInfo.attriName);
@@ -203,10 +160,8 @@ public class IndexManager{
     			bkey = deleteKey.getBytes();
     		}
 			//Index inx=CatalogManager.getIndex(indexInfo.indexName);
-			BPlusTree thisTree=new BPlusTree(indexInfo,indexInfo.rootNum);//创建树访问结构（但不是新树）
-			thisTree.delete(bkey);	//删除
-			//indexInfo.rootNum=thisTree.myRootBlock.blockOffset;//设置根块
-			//CatalogManager.setIndexRoot(indexInfo.indexName, thisTree.myRootBlock.blockoffset);
+			BPlusTree thisTree=new BPlusTree(indexInfo,indexInfo.rootNum);
+			thisTree.delete(bkey);	
 		}catch(NullPointerException e){
 			System.err.println();
 		}

@@ -7,28 +7,16 @@ import com.yjb.catmgr.*;
 import com.yjb.idxmgr.IndexManager;
 import com.yjb.recmgr.*;
 
-/*
- * 疑问：1select和delete返回的结果是record manager直接输出还是由interpreter输出  如果由interpreter输出  结果如何返回
- *      2insert 对于unique属性 如何从数据库中找出是否有相同value的数据 通过record manager?
- *      
- */
+
 public class API {
-	/**
-	 * 初始化API
-	 * 
-	 * @throws IOException
-	 */
+
 
 
 	public static void close() throws IOException {
 		CatalogManager.storeCatalog();
 		BufferManager.close();
 	}
-	/**
-	 * 关闭API
-	 * 
-	 * @throws IOException
-	 */
+
 	public static void Initialize() throws IOException {
 		BufferManager.initialize();
 		CatalogManager.InitialCatalog();
@@ -46,12 +34,7 @@ public class API {
 		CatalogManager.showIndexCatalog();
 	}
 
-	/**
-	 * 创建表
-	 * 
-	 * @param newTable
-	 * @return
-	 */
+
 	public static boolean createTable(String tableName, table newTable) {
 		if (RecordManager.createTable(tableName)
 				&& CatalogManager.createTable(newTable)){
@@ -64,12 +47,7 @@ public class API {
 			return false;
 	}
 
-	/**
-	 * 删除表
-	 * 
-	 * @param tableName
-	 * @return
-	 */
+
 	public static boolean dropTable(String tableName) {
 		for(int i=0;i<CatalogManager.getTableAttriNum(tableName);i++){
 			String indexName = CatalogManager.getIndexName(tableName,CatalogManager.getAttriName(tableName, i));
@@ -82,40 +60,24 @@ public class API {
 		return true;
 	}
 
-	/**
-	 * 创建索引
-	 * 
-	 * @param newIndex
-	 * @return
-	 */
+
 	public static boolean createIndex(index newIndex) {
 		boolean t = IndexManager.createIndex(newIndex);
 		return t & CatalogManager.createIndex(newIndex);
 	}
 
-	/**
-	 * 删除索引
-	 * 
-	 * @param indexName
-	 * @return
-	 */
+
 	public static boolean dropIndex(String indexName) {
 		boolean t = IndexManager.dropIndex(indexName);
 		return t & CatalogManager.dropIndex(indexName);
 	}
 
 
-	/**
-	 * 插入记录
-	 * 
-	 * @param attributes
-	 * @param attriName
-	 * @return
-	 */
+
 	public static boolean insertTuples(String tableName, tuple theTuple) {
 
 		int tupleoffset = RecordManager.insert(tableName, theTuple);
-		//获取index列表
+
 		int n = CatalogManager.getTableAttriNum(tableName);
 		try{
 			for(int i=0;i<n;i++){
@@ -135,13 +97,7 @@ public class API {
 		return true;
 	}
 
-	/**
-	 * 删除记录
-	 * 
-	 * @param tableName
-	 * @param conditionNodes
-	 * @return
-	 */
+
 	public static int deleteTuples(String tableName,
 			conditionNode conditionNodes) {
 		int deleteNum = RecordManager.delete(tableName, conditionNodes);
@@ -149,13 +105,7 @@ public class API {
 		return deleteNum;
 	}
 
-	/**
-	 * 查询
-	 * 
-	 * @param tableName
-	 * @param conditionNodes
-	 * @return
-	 */
+
 	public static Vector<tuple> selectTuples(String tableName,
 			Vector<String> attriNames, conditionNode conditionNodes) {
 		Vector<tuple> res = new Vector<tuple>(0);

@@ -9,7 +9,6 @@ public class CatalogManager {
 	private static String tableFilename="table catalog";
 	private static String indexFilename="index catalog";
 	
-	//从文件中读取Catalog信息进内存中
 	public static void InitialCatalog() throws IOException {
 		InitialTableCatalog();
 		InitialIndexCatalog();
@@ -70,7 +69,7 @@ public class CatalogManager {
 		}		
 		dis.close();
 	}
-	//将内存中的Catalog信息写入文件
+
 	public static void storeCatalog() throws IOException{
 		storeTableCatalog();
 		storeIndexCatalog();
@@ -92,7 +91,7 @@ public class CatalogManager {
 			dos.writeInt(tmpIndex.blockNum);
 			dos.writeInt(tmpIndex.rootNum);
 		}
-		//将流中剩下的内容写入
+	
 		dos.close();				
 	}
 	private static void storeTableCatalog() throws IOException {
@@ -125,7 +124,7 @@ public class CatalogManager {
         }
 		dos.close();
 	}
-	//显示Catalog信息
+	
 	public static void showCatalog(){
 		showTableCatalog();
 		System.out.println();
@@ -269,7 +268,7 @@ public class CatalogManager {
 			System.out.println("The table "+tableName+" doesn't exist");
 		return null;	
 	}
-	public static String getAttriName(String tableName,int i){//用于insert 针对第i个属性
+	public static String getAttriName(String tableName,int i){
 		return tables.get(tableName).attributes.get(i).attriName;
 	}
 	public static int getAttriOffest(String tableName,String attriName){
@@ -305,12 +304,12 @@ public class CatalogManager {
 		System.out.println("Error: The attribute "+attriName+" doesn't exist");
 		return -1;
 	}
-	public static String getType(String tableName,int i){//用于insert 针对第i个属性
+	public static String getType(String tableName,int i){
 		table tmpTable=tables.get(tableName);
 		//System.out.println(tmpTable.attributes.get(i).type+tmpTable.attributes.get(i).attriName);
 		return tmpTable.attributes.get(i).type;
 	}
-	public static int getLength(String tableName,int i){//用于insert 针对第i个属性
+	public static int getLength(String tableName,int i){
 		table tmpTable=tables.get(tableName);
 		return tmpTable.attributes.get(i).length;
 	}
@@ -333,11 +332,7 @@ public class CatalogManager {
 		}
 		return false;
 	} 
-	/*
-	 * 创建表
-	 * @param newTable
-	 * @return
-	 */
+	
 	public static boolean createTable(table newTable){		
 		try{
 			tables.put(newTable.tableName, newTable);
@@ -350,15 +345,11 @@ public class CatalogManager {
 		}
 		
 	}
-	/*
-	 * 删除表
-	 * @param tableName
-	 * @return
-	 */
+
 	public static boolean dropTable(String tableName){
 		try{
 			table tmpTable=tables.get(tableName);
-			for(int i=0;i<tmpTable.indexes.size();i++){ //删除该表中对应的索引
+			for(int i=0;i<tmpTable.indexes.size();i++){ 
 				indexes.remove(tmpTable.indexes.get(i).indexName);
 			}			
 			tables.remove(tableName);
@@ -369,11 +360,7 @@ public class CatalogManager {
 			return false;
 		}
 	}
-	/*
-	 * 创建索引
-	 * @param newIndex
-	 * @return
-	 */
+
 	public static boolean createIndex(index newIndex){
 		try{
 		table tmpTable=getTable(newIndex.tableName);
@@ -389,13 +376,9 @@ public class CatalogManager {
 			return false;
 		}
 	}
-	/*
-	 * 删除索引
-	 * @param indexName
-	 * @return
-	 */
+
 	public static boolean dropIndex(String indexName){
-		//判断index是否已存在
+	
 		try{
 			index tmpIndex=getIndex(indexName);
 			table tmpTable=getTable(tmpIndex.tableName);				

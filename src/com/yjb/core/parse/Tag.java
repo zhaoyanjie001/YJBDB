@@ -26,12 +26,12 @@ public class Tag {
         ORDER=233,
         BY=244,
         ASC=245,		
-        DESC=246,		//关键字
-        STR=222,		//字符窜
-        INTNUM  = 220,	//整数  
-        FLOATNUM =221,	//浮点数
-        TYPE  = 257,  	//字段类型
-        OP=222,			//操作符
-        ID= 264;		//表名、索引名或字段名
+        DESC=246,		
+        STR=222,		
+        INTNUM  = 220, 
+        FLOATNUM =221,	
+        TYPE  = 257,  	
+        OP=222,			
+        ID= 264;		
 
 }  

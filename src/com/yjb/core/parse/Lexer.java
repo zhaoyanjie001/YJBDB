@@ -3,15 +3,14 @@ import java.io.*;
 import java.util.*;  
   
 public class Lexer {      
-    char peek = ' ';        /* 下一个读入字符 */  
+    char peek = ' ';     
     Hashtable<String, Word> words =   
             new Hashtable<String, Word>();  
     
     BufferedReader reader = null;   
-    /* 保存当前是否读取到了文件的结尾  */  
+ 
     private Boolean isReaderEnd = false;   
       
-    /* 是否读取到文件的结尾 */  
     public Boolean getReaderState() {  
         return this.isReaderEnd;  
     }  
@@ -21,13 +20,10 @@ public class Lexer {
         words.put(w.lexme, w);  
     }  
       
-    /* 
-     * 构造函数中将关键字和类型添加到hashtable words中 
-     */  
+  
     public Lexer(BufferedReader reader) {  
     	this.reader=reader;
-    
-        /* 关键字 */  
+     
         this.reserve(new Word("create",Tag.CREATE));
         this.reserve(new Word("drop",Tag.DROP));
         this.reserve(new Word("table",Tag.TABLE));
@@ -77,7 +73,7 @@ public class Lexer {
     }  
     
     public Token scan() throws IOException {  
-        /* 消除空白 */   
+     
         for( ; ; readch() ) {  
             if(peek == ' ' || peek == '\t'||peek=='\r')  
                 continue;  
@@ -87,9 +83,8 @@ public class Lexer {
                 break;  
         }  
           
-        /* 下面开始分割关键字，标识符等信息  */  
+  
         switch (peek) {  
-        /* 对于 ==, >=, <=, !=的区分使用状态机实现 */  
         case '=' :  
             if (readch('=')) {  
                 return Comparison.eq;   
@@ -124,9 +119,7 @@ public class Lexer {
             }     
         }  
         
-        /* 下面是对数字的识别，根据文法的规定的话，这里的 
-         * 数字能够识别整数和小数. 
-         */  
+        
         if(Character.isDigit(peek)) {  
             double value = 0;  Num n;
             do {  
@@ -152,13 +145,11 @@ public class Lexer {
             //table.put(n, "Num");  
             return n;  
         }  
-        /*
-         * 对字符串进行识别
-         */
+  
         if(peek=='\''){
         	StringBuffer sb = new StringBuffer();
         	sb.append("");
-        //	sb.append(peek);
+      
         	readch(); 
         	
         	while (peek!='\''&&peek!=';'){
@@ -166,7 +157,7 @@ public class Lexer {
                  readch(); 
         	}
         	
-        //	sb.append(peek);
+   
         	Token w;
         	if(peek==';') {
         		 w  = new Token(peek);  
@@ -176,37 +167,28 @@ public class Lexer {
         	readch();       
             return w; 
         }
-        /* 
-         * 关键字或者是标识符的识别 
-         */  
+  
         if(Character.isLetter(peek)) {  
         	
             StringBuffer sb = new StringBuffer();  
               
-            /* 首先得到整个的一个分割 */  
             do {  
                 sb.append(peek);  
                 readch();  
             } while (Character.isLetterOrDigit(peek)||peek=='_'||peek=='.'||peek=='&');  
               
-            /* 判断是关键字还是标识符 */  
             String s = sb.toString();  
             Word w = (Word)words.get(s);  
-           
-            /* 如果是关键字或者是类型的话，w不应该是空的 */  
+            
             if(w != null) {  
-                return w; /* 说明是关键字 或者是类型名 */  
+                return w; 
             }  
               
-            /* 否则就是一个标识符id */ 
-            
             w = new Word(s, Tag.ID);  
             
             return w;  
         }  
           
-        /* peek中的任意字符都被认为是词法单元返回 */  
-        
         Token tok  = new Token(peek);  
         peek = ' ';  
           

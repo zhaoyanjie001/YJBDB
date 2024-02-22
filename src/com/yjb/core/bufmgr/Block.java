@@ -11,29 +11,23 @@ public class Block{
     public static final int BLOCKSIZE = 4096;
 	static final boolean EMPTY = true;
 
-	String filename="";//记录块所属文件名
-	public int blockoffset=0;//记录这个块属于这个文件的第几个块
-	boolean dirty = false;//是否脏数据
-	public boolean valid = false;//有效位
-	boolean fixed = false;//是否被锁定
-	boolean reference_bit = false;//引用位，用于LRU算法
+	String filename="";
+	public int blockoffset=0;
+	boolean dirty = false;
+	public boolean valid = false;
+	boolean fixed = false;
+	boolean reference_bit = false;
 
-	public byte[] data = new byte[BLOCKSIZE];//数据区，4KB大小
+	public byte[] data = new byte[BLOCKSIZE];
 
-//	外部接口：
-	
-//	功能描述：用于读出4KB数据
-//	实现原理：返回内部成员data，将引用位置1
+
 	public byte[] readData() {
 		reference_bit = true;
 		return data;
 	}
 
-//	功能描述：用于将inputdata[]中的数据写入块中
-//	实现原理：写入数据后，将引用位置1，dirty位置1以标记为脏数据
 	public boolean writeData(int byteoffset, byte inputdata[], int size) {
-		// 给定偏移，将大小为size的数据data[]写入block
-		// 请避免越界
+
 		if (byteoffset + size >= 4096)
 			return false;
 		for (int i = 0; i < size; i++)
@@ -43,28 +37,20 @@ public class Block{
 		return true;
 	}
 
-//	功能描述：用于在直接修改data之后发出脏数据信号及引用位信号
-//	实现原理：写入数据后，将引用位置1，dirty位置1以标记为脏数据
 	public boolean writeData() {
 		dirty = true;
 		reference_bit = true;
 		return true;
 	}
 
-//	功能描述：把块锁定在缓冲区
-//	实现原理：fix位置1以锁定
 	public void fix() {
 		fixed = true;
 	}
 
-//	功能描述：把块从缓冲区解锁
-//	实现原理：fix位置0以解锁
 	public void unfix() {
 		fixed = false;
 	}
 
-//	功能描述：从块中的指定位置读出一个整数
-//	实现原理：读出数据后，将引用位置1
 	public int readInt(int offset) {
 		byte[] temp = new byte[4];
 		temp[0] = data[offset + 0];
@@ -83,9 +69,6 @@ public class Block{
 		reference_bit = true;
 		return res;		
 	}
-
-//	功能描述：从块中的指定位置写入一个整数
-//	实现原理：写入数据后，将引用位置1，dirty位置1以标记为脏数据
 	public void writeInt(int offset, int num) {
 		ByteArrayOutputStream boutput = new ByteArrayOutputStream();
 		DataOutputStream doutput = new DataOutputStream(boutput);
@@ -104,8 +87,6 @@ public class Block{
 		reference_bit = true;
 	}
 
-//	功能描述：从块中的指定位置读出一个float
-//	实现原理：读出数据后，将引用位置1
 	public float readFloat(int offset) {
 		byte[] temp = new byte[4];
 		temp[0] = data[offset + 0];
@@ -124,9 +105,6 @@ public class Block{
 		reference_bit = true;
 		return res;
 	}
-
-//	功能描述：从块中的指定位置写入一个float
-//	实现原理：写入数据后，将引用位置1，dirty位置1以标记为脏数据
 	public void writeFloat(int offset, float num) {
 		ByteArrayOutputStream boutput = new ByteArrayOutputStream();
 		DataOutputStream doutput = new DataOutputStream(boutput);
@@ -144,10 +122,8 @@ public class Block{
 		dirty = true;
 		reference_bit = true;
 	}
-	
-//	功能描述：从块中的指定位置读出一个长度为length的String
-//	实现原理：读出数据后，将引用位置1
-	public String readString(int offset, int length) {//用length来指定attribute的长度是几个字节。
+
+	public String readString(int offset, int length) {
 		byte[] buf = new byte[length];
 		for (int i = 0; i < length; i++)
 			buf[i] = data[offset++];
@@ -167,9 +143,8 @@ public class Block{
 		return res;
 	}
 	
-//	功能描述：从块中的指定位置写入一个长度为length的String
-//	实现原理：写入数据后，将引用位置1，dirty位置1以标记为脏数据
-	public void writeString(int offset, String num, int length) {//用length来指定把string补0补到几个字节，
+
+	public void writeString(int offset, String num, int length) {
 		byte[] buf = num.getBytes();
 		int j;
 		for (j = 0; j < buf.length; j++) {
@@ -188,7 +163,6 @@ public class Block{
 	public int recordNum = 0;
 	public Block next = null;
 	public Block previous = null;
-	//中间节点用：设置分层的键值，包括了它在
 	public  void writeInternalKey(int pos,byte[] key,int offset) {
 		writeData(pos,key,key.length);
 		writeInt(pos+key.length,offset);

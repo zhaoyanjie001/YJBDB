@@ -15,11 +15,9 @@ import lexer.Comparison;
 import lexer.Lexer;
 import lexer.Tag;
 import lexer.Token;
-/*
- * 表名只能是字母开头的东西
- */
+
 public class Interpreter {
-   private static Token thetoken;//记录当前token
+   private static Token thetoken;
    private static boolean isSynCorrect=true;
    private static boolean isSemaCorrect=true;
    private static String synErrMsg;
@@ -39,12 +37,12 @@ public class Interpreter {
     	   e.printStackTrace();
        }
    }
-   //逐条语句进行解析
+
    public static void Parsing(BufferedReader reader)throws IOException {
 	   Lexer lexer = new Lexer(reader);  
    		while(lexer.getReaderState() == false){ 
-   			//System.out.print("*");
-   			if(!isSynCorrect){   //调试通过后再加
+   			
+   			if(!isSynCorrect){   
    				if(thetoken.toString().equals(";")){
    					System.out.println(synErrMsg);
    					isSemaCorrect=true;
@@ -55,7 +53,7 @@ public class Interpreter {
    			thetoken=lexer.scan();	   
    			 if(thetoken.tag==Tag.EXECFILE){
    				thetoken=lexer.scan();	
-			    // System.out.println(thetoken.toString());
+			    
    			    File file=new File(thetoken.toString()+".txt");
    			    thetoken=lexer.scan();
 			     if(thetoken.toString().equals(";")){
@@ -63,7 +61,7 @@ public class Interpreter {
 			    	if(file.exists()){
 			    		 BufferedReader reader2=new BufferedReader(new FileReader(file));
 			    		 Parsing(reader2);
-			    		 isSynCorrect=true;//为了奇怪的bug
+			    		 isSynCorrect=true;
 			    		 continue;
 			    	 }
 			    	else{
@@ -95,16 +93,10 @@ public class Interpreter {
 			 }
 			 else if(thetoken.tag==Tag.CREATE){
 				 thetoken=lexer.scan();
-				/*
-				 * create table 语义错误种类 
-				 * 1 table name已存在 
-				 * 2 primary key不存在 
-				 * 3 重复attribute属性 
-				 * 4 char(n) 的n越界
-				 */
+			
 				 if(thetoken.tag==Tag.TABLE){
 					thetoken=lexer.scan();
-					if(thetoken.tag==Tag.ID){	//create table 表名														 
+					if(thetoken.tag==Tag.ID){													 
 						    String tmpTableName=thetoken.toString();
 							Vector<attribute>tmpAttributes=new Vector<attribute>();
 							String tmpPrimaryKey=null;
@@ -113,10 +105,10 @@ public class Interpreter {
 								 isSemaCorrect=false;	 
 							 }
 						 thetoken=lexer.scan();
-						 if(thetoken.toString().equals("(")){//create table 表名(
+						 if(thetoken.toString().equals("(")){
 							 thetoken=lexer.scan();			
 							 while(!thetoken.toString().equals(")")&&!thetoken.toString().equals(";")){
-								 if(thetoken.tag==Tag.ID){ //create table 表名 ( 属性名
+								 if(thetoken.tag==Tag.ID){ 
 									 String tmpAttriName=thetoken.toString();
 									 String tmpType;
 									 int tmpLength;
@@ -126,9 +118,9 @@ public class Interpreter {
 										 isSemaCorrect=false;
 									 }
 									 thetoken=lexer.scan();
-									 if(thetoken.tag==Tag.TYPE){//create table 表名 ( 属性名 类型名
+									 if(thetoken.tag==Tag.TYPE){
 										 tmpType=thetoken.toString();
-										 if(tmpType.equals("char")){//针对char(n)类型做特殊处理											 
+										 if(tmpType.equals("char")){
 											 thetoken=lexer.scan();
 											 if(thetoken.toString().equals("(")){
 												 thetoken=lexer.scan();
@@ -156,7 +148,7 @@ public class Interpreter {
 											 }
 											 
 										 }	
-										 else{//不是char
+										 else{
 											 tmpLength=4;
 											 
 										 }
@@ -226,13 +218,11 @@ public class Interpreter {
 									 break;
 								 }
 								 thetoken=lexer.scan();
-							 }//end of while")"
+							 }
 							 thetoken=lexer.scan();
 							
 							 if(isSynCorrect&&thetoken.toString().equals(";")){
-								 /*
-								  * 执行create table 操作
-								  * */
+								 
 								 if(tmpPrimaryKey==null){
 									 synErrMsg="Synthetic error: no primary key defined";isSynCorrect=false;
 									 continue;
@@ -252,7 +242,7 @@ public class Interpreter {
 								 continue;
 							 }
 							 else{
-								 //System.out.println("stop here"+isSynCorrect);
+								 
 								 if(isSynCorrect)  synErrMsg="Synthetic error near: "+thetoken.toString();isSynCorrect=false;
 								 continue;
 							 }
@@ -263,27 +253,20 @@ public class Interpreter {
 						 continue;
 					 }					 						 
 				 }
-				/*
-				 * create index 语义错误种类  
-				 * 1 index name已存在 
-				 * 2 table name 不存在 
-				 * 3 attribute不存在 
-				 * 4 attribute已经是索引  
-				 * 5 attribute 不是unique
-				 */
+				
 				 else if(thetoken.tag==Tag.INDEX){		
 					 String tmpIndexName,tmpTableName,tmpAttriName;
 					 thetoken=lexer.scan();
-					 if(thetoken.tag==Tag.ID){//create index a
+					 if(thetoken.tag==Tag.ID){
 						 tmpIndexName=thetoken.toString();
 						 if(CatalogManager.isIndexExist(tmpIndexName)){
 							 semaErrMsg="The index "+tmpIndexName+" already exist";
 							 isSemaCorrect=false;
 						 }
 						 thetoken=lexer.scan();
-						 if(thetoken.tag==Tag.ON){//create index a on
+						 if(thetoken.tag==Tag.ON){
 							 thetoken=lexer.scan();
-							 if(thetoken.tag==Tag.ID){//create index a on b
+							 if(thetoken.tag==Tag.ID){
 								 tmpTableName=thetoken.toString();
 								 if(!CatalogManager.isTableExist(tmpTableName)){
 									 semaErrMsg="The table "+tmpTableName+" doesn't exist";
@@ -307,10 +290,8 @@ public class Interpreter {
 											 isSemaCorrect=false;
 										 }
 										 thetoken=lexer.scan();
-										 if(thetoken.toString().equals(")")&&lexer.scan().toString().equals(";")){//create index a on b;
-											 /*
-											  * 执行create index操作
-											  * */
+										 if(thetoken.toString().equals(")")&&lexer.scan().toString().equals(";")){
+											 
 											 if(isSemaCorrect){
 												 if(API.createIndex(new index(tmpIndexName,tmpTableName,tmpAttriName)))
 												  System.out.println("create index "+tmpIndexName+" on "+tmpTableName+" ("+tmpAttriName+") succeeded.");
@@ -358,26 +339,22 @@ public class Interpreter {
 					 if(isSynCorrect)  synErrMsg="Synthetic error near: "+thetoken.toString();isSynCorrect=false;
 					 continue;
 				 }
-			 }//end of create
+			 }
 			 else if(thetoken.tag==Tag.DROP){
 				 thetoken=lexer.scan();
-				/*
-				 * drop table 语义错误种类  1该table不存在
-				 */
+				
 				 if(thetoken.tag==Tag.TABLE){
 					 String tmpTableName;
 					 thetoken=lexer.scan();
-					 if(thetoken.tag==Tag.ID){//drop table a
+					 if(thetoken.tag==Tag.ID){
 						 tmpTableName=thetoken.toString();
 						 if(!CatalogManager.isTableExist(tmpTableName)){
 							 semaErrMsg="The table "+tmpTableName+" doesn't exist, ";
 							 isSemaCorrect=false;
 						 }
 						 thetoken=lexer.scan();
-						 if(thetoken.toString().equals(";")){//drop table a ;
-							 /*
-							  * 执行drop table
-							  * 操作*/
+						 if(thetoken.toString().equals(";")){
+							
 							 if(isSemaCorrect){
 								 if(API.dropTable(tmpTableName));
 								 System.out.println("drop table "+tmpTableName+" succeeded");
@@ -399,15 +376,10 @@ public class Interpreter {
 						 if(isSynCorrect)  synErrMsg="Synthetic error near: "+thetoken.toString();isSynCorrect=false;
 						 continue;
 					 }	 
-				 }//end of drop table
-				 /*
-				  * drop index 语义错误种类  
-				  * 1该index不存在  
-				  * 2 该index是主键
-				  */
-				 else if(thetoken.tag==Tag.INDEX){//drop index
+				 }
+				 else if(thetoken.tag==Tag.INDEX){
 					 thetoken=lexer.scan();
-					 if(thetoken.tag==Tag.ID){//drop index a
+					 if(thetoken.tag==Tag.ID){
 						 String tmpIndexName=thetoken.toString();
 						 if(!CatalogManager.isIndexExist(tmpIndexName)){
 							 semaErrMsg="The index "+tmpIndexName+" doesn't exist, ";
@@ -418,10 +390,8 @@ public class Interpreter {
 							 isSemaCorrect=false;
 						 }
 						 thetoken=lexer.scan();
-						 if(thetoken.toString().equals(";")){//drop index a ;
-							 /*
-							  * 执行drop index 操作
-							  * */
+						 if(thetoken.toString().equals(";")){
+							
 							 if(isSemaCorrect){
 								 if(API.dropIndex(tmpIndexName))
 								 System.out.println("drop index "+tmpIndexName+" succeeded.");
@@ -447,19 +417,12 @@ public class Interpreter {
 					 if(isSynCorrect)  synErrMsg="Synthetic error near: "+thetoken.toString();isSynCorrect=false;
 					 continue;
 				 }
-			 }//end of drop
-			 /*
-			  * insert into 语义错误种类
-			  * 1 table 不存在
-			  * 2 插入的tuple数量不对
-			  * 3 插入的tuple类型（及长度）不对
-			  * 4 unique key 有重复插入（未实现,需要record manager配合）
-			  */
+			 }
 			 else if(thetoken.tag==Tag.INSERT){
 				 thetoken=lexer.scan();
-				 if(thetoken.tag==Tag.INTO){//insert into
+				 if(thetoken.tag==Tag.INTO){
 					 thetoken=lexer.scan();
-					 if(thetoken.tag==Tag.ID){//insert into 表名
+					 if(thetoken.tag==Tag.ID){
 						 String tmpTableName=thetoken.toString();
 						 Vector<String>units=new Vector<String>();
 						 if(!CatalogManager.isTableExist(tmpTableName)){
@@ -473,9 +436,9 @@ public class Interpreter {
 							 if(thetoken.toString().equals("(")){
 								 thetoken=lexer.scan();
 								 String tmpValue ;
-								 int i=0;//记录unit的index
-								 while(!thetoken.toString().equals(")")){	//insert into 表名 values()	
-									// System.out.println(thetoken.tag);
+								 int i=0;
+								 while(!thetoken.toString().equals(")")){	
+									
 									 if(isSemaCorrect&&i>=CatalogManager.getTableAttriNum(tmpTableName)){
 										 isSemaCorrect=false;
 										 semaErrMsg="The number of values is larger than that of attributes";
@@ -487,7 +450,7 @@ public class Interpreter {
 										 String tmpType=CatalogManager.getType(tmpTableName, i);
 										 String tmpAttriName=CatalogManager.getAttriName(tmpTableName, i);
 						
-										 if(CatalogManager.inUniqueKey(tmpTableName, tmpAttriName)){//对于unique key的判别
+										 if(CatalogManager.inUniqueKey(tmpTableName, tmpAttriName)){
 											 conditionNode tmpCondition=new conditionNode(tmpAttriName,"=",thetoken.toString());
 											
 											 if(isSemaCorrect&&API.selectTuples(tmpTableName,null,tmpCondition).size()!=0){
@@ -495,9 +458,9 @@ public class Interpreter {
 												 semaErrMsg="The value "+thetoken.toString()+" already exists in the unique attrubute "+tmpAttriName;
 											 }
 										 }
-										 if(thetoken.tag==Tag.STR){//字符类型
+										 if(thetoken.tag==Tag.STR){
 											 
-											 //if(tmpType.equals("char"))tmpLength/=2;
+											 
 											 if(!tmpType.equals("char")
 													 ||tmpLength<tmpValue.getBytes().length){
 												 isSemaCorrect=false;
@@ -506,7 +469,7 @@ public class Interpreter {
 											 i++;
 											 units.add(tmpValue); 
 										 }
-										 else if(thetoken.tag==Tag.INTNUM){//整型
+										 else if(thetoken.tag==Tag.INTNUM){
 									
 											 if(!tmpType.toString().equals("int")
 													 &&!tmpType.equals("float")){
@@ -516,7 +479,7 @@ public class Interpreter {
 											 i++;
 											 units.add(tmpValue); 	 
 										 }
-										 else if(thetoken.tag==Tag.FLOATNUM){//浮点型
+										 else if(thetoken.tag==Tag.FLOATNUM){
 									
 											 if(!CatalogManager.getType(tmpTableName, i++).equals("float")){
 												isSemaCorrect=false;
@@ -543,9 +506,6 @@ public class Interpreter {
 								 }
 								 thetoken=lexer.scan();
 								 if(isSynCorrect&&thetoken.toString().equals(";")){
-									 /*
-									  * 执行insert 操作
-									  * */
 									
 									 
 									 if(isSemaCorrect){
@@ -559,11 +519,7 @@ public class Interpreter {
 										 System.out.println(", insert failed");
 										 isSemaCorrect=true;
 									 }
-									/* for(int i=0;i<tmpValue.size();i++){
-										
-										 System.out.print(tmpValue.get(i)+"("+tmpType.get(i).toString()+")");
-										
-									 }*/
+									
 									
 								 }
 								 else{
@@ -590,15 +546,11 @@ public class Interpreter {
 					 if(isSynCorrect)  synErrMsg="Synthetic error near: "+thetoken.toString();isSynCorrect=false;
 					 continue;
 				 }
-			 }//end of insert
-			/*
-			 * delete 语义错误种类
-			 * 1 table 不存在
-			 * 2 where 条件有误 见parsingCondition
-			 */
+			 }
+			
 			 else if(thetoken.tag==Tag.DELETE){
 				 thetoken=lexer.scan();
-				 if(thetoken.tag==Tag.FROM){//delete from
+				 if(thetoken.tag==Tag.FROM){
 					 thetoken=lexer.scan();
 					 if(thetoken.tag==Tag.ID){
 						 String tmpTableName=thetoken.toString();
@@ -607,18 +559,16 @@ public class Interpreter {
 							 isSemaCorrect=false;
 						 }
 						 thetoken=lexer.scan();
-						 if(thetoken.tag==Tag.WHERE){//delete from 表名 where 条件；
-							 // 添加搜索条件
+						 if(thetoken.tag==Tag.WHERE){
+							 
 							 conditionNode tmpConditionNodes=ParsingCondition(lexer,tmpTableName,";");
-							 if(thetoken.toString().equals(";")){//delete from 表名；
+							 if(thetoken.toString().equals(";")){
 								
 								 if(isSemaCorrect&&isSynCorrect){
-									 /*
-									  * 执行delete where 操作
-									  */
+									 
 									 int deleteNum=API.deleteTuples(tmpTableName, tmpConditionNodes);									 
 									 System.out.println("delete "+deleteNum+ " tuples from table "+tmpTableName);
-									 //System.out.println("delete succeeded");
+									 
 								 }
 								 else if(!isSynCorrect){
 									 continue;
@@ -633,12 +583,10 @@ public class Interpreter {
 								 continue;
 							 }
 						 }
-						 else if(thetoken.toString().equals(";")){//delete from 表名；
+						 else if(thetoken.toString().equals(";")){
 							 
 							 if(isSemaCorrect){
-								 /*
-								  * 执行delete操作
-								  */
+								
 								 int deleteNum=API.deleteTuples(tmpTableName, null);
 								 
 								 System.out.println("delete "+deleteNum+ " tuples from table "+tmpTableName);
@@ -665,14 +613,10 @@ public class Interpreter {
 					 continue;
 				 }					 
 			 }
-   			/*
- 			 * select 语义错误种类
- 			 * 1 table 不存在
- 			 * 2 where 条件有误  见parsingCondition
- 			 */
+   			
 			 else if(thetoken.tag==Tag.SELECT){
 				 Vector<String>tmpAttriNames=ParsingProjection(lexer);
-					 if(isSynCorrect&&thetoken.tag==Tag.FROM){//select * from
+					 if(isSynCorrect&&thetoken.tag==Tag.FROM){
 						 thetoken=lexer.scan();
 						 if(thetoken.tag==Tag.ID){
 							 String tmpTableName=thetoken.toString();
@@ -682,7 +626,7 @@ public class Interpreter {
 								 semaErrMsg="The table "+tmpTableName+" doesn't exist";
 								 isSemaCorrect=false;
 							 }
-							 if(tmpAttriNames!=null)//对于投影的属性进行判断
+							 if(tmpAttriNames!=null)
 							 for(int i=0;i<tmpAttriNames.size();i++){
 								 if(isSemaCorrect&&!CatalogManager.isAttributeExist(tmpTableName, tmpAttriNames.get(i))){
 									 semaErrMsg="The attribute "+tmpAttriNames.get(i)+" doesn't exist";
@@ -690,7 +634,7 @@ public class Interpreter {
 								 }
 							 }
 							 thetoken=lexer.scan();
-							 //如果有join
+							 
 							 if(thetoken.tag==Tag.JOIN||thetoken.toString().equals(",")){
 								 joinflag=true;
 								 thetoken=lexer.scan();
@@ -708,8 +652,7 @@ public class Interpreter {
 									 continue;
 								 }
 							 }
-							 if(isSynCorrect&&thetoken.tag==Tag.WHERE){//select * from 表名 where 条件；
-								 /* 添加搜索条件*/
+							 if(isSynCorrect&&thetoken.tag==Tag.WHERE){
 								 
 								 if(joinflag){
 									 thetoken=lexer.scan();
@@ -726,7 +669,7 @@ public class Interpreter {
 												isSemaCorrect=false;
 										   }
 										   thetoken=lexer.scan();
-										   //if(thetoken.toString().equals("=")){
+										   
 										   if(thetoken.tag==Tag.OP){
 											   thetoken=lexer.scan();
 											   if(thetoken.tag==Tag.ID){
@@ -742,12 +685,11 @@ public class Interpreter {
 												   thetoken=lexer.scan();
 												   if(thetoken.toString().equals(";")){
 													   if(isSemaCorrect&&isSynCorrect){
-															 /*
-															  * 执行select join 操作*/
-														    for(int i=0;i<CatalogManager.getTableAttriNum(tmpTableName);i++){ //输出属性名
+															
+														    for(int i=0;i<CatalogManager.getTableAttriNum(tmpTableName);i++){ 
 																System.out.print("\t"+CatalogManager.getAttriName(tmpTableName, i));
 															}
-														    for(int i=0;i<CatalogManager.getTableAttriNum(tmpTableName2);i++){ //输出属性名
+														    for(int i=0;i<CatalogManager.getTableAttriNum(tmpTableName2);i++){ 
 																System.out.print("\t"+CatalogManager.getAttriName(tmpTableName2, i));
 															}
 														    System.out.println();
@@ -787,10 +729,8 @@ public class Interpreter {
 									 continue;
 								 }
 								 conditionNode tmpConditionNode=ParsingCondition(lexer,tmpTableName,";");
-								 if(thetoken.toString().equals(";")){//select from 表名；
+								 if(thetoken.toString().equals(";")){
 									 if(isSemaCorrect&&isSynCorrect){
-										 /*
-										  * 执行select where 操作*/
 										 
 										 showSelectRes(tmpTableName,tmpAttriNames, tmpConditionNode,null,false);
 										
@@ -826,7 +766,7 @@ public class Interpreter {
 													 }
 												 }
 												 if(isSemaCorrect){
-													 /*执行select where order操作*/
+												
 													 showSelectRes(tmpTableName,tmpAttriNames, tmpConditionNode,tmpOrderAttriName,order);
 													 
 												 }
@@ -855,9 +795,9 @@ public class Interpreter {
 									 continue;
 								 }
 							 }
-							 else if(thetoken.toString().equals(";")){//select * from 表名；
+							 else if(thetoken.toString().equals(";")){
 								 if(isSemaCorrect){
-									 /*执行select 操作*/
+									 
 									 showSelectRes(tmpTableName,tmpAttriNames, null,null,false);
 								 }
 								 else{
@@ -889,9 +829,7 @@ public class Interpreter {
 												 }
 											 }
 											 if(isSemaCorrect){
-												 /*
-												  * 执行select order操作
-												  */
+												 
 												 showSelectRes(tmpTableName,tmpAttriNames, null,tmpOrderAttriName,order);
 												 
 											 }
@@ -973,14 +911,14 @@ public class Interpreter {
 				 continue;
 			 }
    			 
-   		} //end of while
+   		} 
 		   
    		 
    	}
- //显示 选择返回结果
+ 
 private static void showSelectRes(String tmpTableName,Vector<String> tmpAttriNames,conditionNode tmpConditionNode,String tmpOrderAttriName,boolean order){
 		if(tmpAttriNames==null)
-			for(int i=0;i<CatalogManager.getTableAttriNum(tmpTableName);i++){ //输出属性名
+			for(int i=0;i<CatalogManager.getTableAttriNum(tmpTableName);i++){ 
 				System.out.print("\t"+CatalogManager.getAttriName(tmpTableName, i));
 			}
 		else
@@ -998,7 +936,7 @@ private static void showSelectRes(String tmpTableName,Vector<String> tmpAttriNam
 		}
 		System.out.println("There are "+seleteTuples.size()+" tuples returned");
    }
-//对project部分语句进行解析
+
 private static Vector<String> ParsingProjection(Lexer lexer) throws IOException{
 	   Vector<String>tmpAttriNames=new Vector<String>();
 	   thetoken=lexer.scan();
@@ -1029,7 +967,7 @@ private static Vector<String> ParsingProjection(Lexer lexer) throws IOException{
 		   return tmpAttriNames;
 	   }
    }
-//对条件的每个表达式进行解析
+
 private static conditionNode ParsingExpression(Lexer lexer,String tmpTableName) throws IOException{
 	   String tmpAttriName;Comparison op;String tmpValue;	
 	   	boolean constantFlag = false;
@@ -1077,11 +1015,11 @@ private static conditionNode ParsingExpression(Lexer lexer,String tmpTableName) 
 							 semaErrMsg="The type of value +"+tmpValue+" should be "+tmpType+"("+tmpLength+"), not float"; 
 						}
 				   }
-				   else if(thetoken.tag==Tag.ID){//属性间比较	
+				   else if(thetoken.tag==Tag.ID){
 					   constantFlag=false;
 					   String tmpType1=CatalogManager.getType(tmpTableName, tmpAttriName);
 					   String tmpType2=CatalogManager.getType(tmpTableName, tmpValue);
-					   //支持float或int或char的属性间比较
+					   
 					   if(!tmpType1.equals(tmpType2)){
 						   isSemaCorrect=false;
 							 semaErrMsg="The two attributes are in different types and cannot be compared"; 
@@ -1092,7 +1030,7 @@ private static conditionNode ParsingExpression(Lexer lexer,String tmpTableName) 
 						isSynCorrect=false;
 						
 				   }				   
-				   //return new conditionNode(tmpAttriName,op,tmpValue,constantFlag);
+				   
 				    
 			   }
 			   return new conditionNode(tmpAttriName,op,tmpValue,constantFlag);
@@ -1109,18 +1047,13 @@ private static conditionNode ParsingExpression(Lexer lexer,String tmpTableName) 
 	   }
 	return null;	   
    }
-//对条件部分字符串进行解析
+
 private static conditionNode ParsingCondition(Lexer lexer,String tmpTableName,String endtoken)throws IOException {
-	   /*
-	    * 语义错误种类
-	    * 1 属性名不存在
-	    * 2 value 格式不对
-	    * 3 操作符不对 char只支持= <>
-	    */
+	  
 	   conditionNode tmpConditionRoot = null;
 	   conditionNode tmpExpresstion = null,tmpConjunction;
 	   thetoken=lexer.scan();
-	   boolean flag=false;//如果第一个式子是带括号的 flag==true 以保证其完整性
+	   boolean flag=false;
 	   if(thetoken.toString().equals("(")){
 		   tmpConditionRoot=ParsingCondition(lexer,tmpTableName,")");
 		   flag=true;
@@ -1154,7 +1087,7 @@ private static conditionNode ParsingCondition(Lexer lexer,String tmpTableName,St
 			   if(tmpExpresstion==null){
 				   return null;
 			   }
-			   //建树
+			   
 			   if(tmpConditionRoot.conjunction=="or"&&flag==false){
 				   
 				   tmpConditionRoot=tmpConditionRoot.linkChildNode(tmpConditionRoot.left, tmpConjunction.linkChildNode(tmpConditionRoot.right, tmpExpresstion));   
@@ -1186,7 +1119,7 @@ private static conditionNode ParsingCondition(Lexer lexer,String tmpTableName,St
 			   if(tmpExpresstion==null){
 				   return null;
 			   }
-			 //建树
+			 
 			   tmpConditionRoot=tmpConjunction.linkChildNode(tmpConditionRoot, tmpExpresstion);
 		   }
 		   
