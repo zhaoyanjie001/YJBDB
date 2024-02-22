@@ -16,7 +16,6 @@ public class Interpreter {
    private static String synErrMsg;
    private static String semaErrMsg;
    
-   
    public static void main(String []args){		   
 	   System.out.println("Welcome to MiniSql.Please enter the command");
 	   

@@ -3,11 +3,9 @@ import java.util.Vector;
 
 import com.yjb.core.bufmgr.*;
 import com.yjb.core.catmgr.*;
-import com.yjb.core.filmgr.*;
 import com.yjb.core.recmgr.*;
 import com.yjb.core.idxmgr.*;
 import com.yjb.core.parse.*;
-
 
 public class API {
 
