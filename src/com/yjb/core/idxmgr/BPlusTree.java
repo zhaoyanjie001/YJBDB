@@ -15,9 +15,9 @@ public class BPlusTree {
     
     public String filename;
 	public Block myRootBlock;
-	public index myindexInfo;  
+	public Index myindexInfo;  
 
-	public BPlusTree(index indexInfo){
+	public BPlusTree(Index indexInfo){
 		try{	
 			 filename=indexInfo.indexName+".index";
 			 FileManager.creatFile(filename);
@@ -38,7 +38,7 @@ public class BPlusTree {
 	}
 	
 	
-	public BPlusTree(index indexInfo,int rootBlockNum){
+	public BPlusTree(Index indexInfo,int rootBlockNum){
 		int columnLength=indexInfo.columnLength; 
 		MAX_FOR_LEAF=(int)Math.floor((BLOCKSIZE-1-4-POINTERLENGTH-POINTERLENGTH)/(8+columnLength));
 		MIN_FOR_LEAF=(int)Math.ceil(1.0 * MAX_FOR_LEAF/ 2);	
@@ -83,7 +83,7 @@ public class BPlusTree {
 		
 	}
 	
-	public offsetInfo searchKey(byte[] originalkey){
+	public OffsetInfo searchKey(byte[] originalkey){
 		Node rootNode;
 		if(myRootBlock.readData()[0]=='I'){ 
 			rootNode=new InternalNode(myRootBlock,true);
@@ -107,7 +107,7 @@ public class BPlusTree {
 		return rootNode.searchKey(key); 
 	}
 	
-	public offsetInfo searchKey(byte[] originalkey,byte[] endkey){
+	public OffsetInfo searchKey(byte[] originalkey,byte[] endkey){
 		Node rootNode;
 		if(myRootBlock.readData()[0]=='I'){ 
 			rootNode=new InternalNode(myRootBlock,true);
@@ -176,8 +176,8 @@ public class BPlusTree {
 
 		abstract Block insert(byte[] inserKey,int blockOffset, int offset);
 		abstract Block delete(byte[] deleteKey);
-		abstract offsetInfo searchKey(byte[] Key);
-		abstract offsetInfo searchKey(byte[] skey, byte[] ekey);
+		abstract OffsetInfo searchKey(byte[] Key);
+		abstract OffsetInfo searchKey(byte[] skey, byte[] ekey);
     }
 	
 	public int compareTo(byte[] buffer1,byte[] buffer2) {
@@ -367,7 +367,7 @@ public class BPlusTree {
 		}
 		
 		
-		offsetInfo searchKey(byte[] key){
+		OffsetInfo searchKey(byte[] key){
 			int keyNum=block.readInt(1);
 			int i=0;
 			for(;i<keyNum;i++){
@@ -385,7 +385,7 @@ public class BPlusTree {
 			return nextNode.searchKey(key); 
 		}
 		
-		offsetInfo searchKey(byte[] skey,byte[] ekey){
+		OffsetInfo searchKey(byte[] skey,byte[] ekey){
 			int keyNum=block.readInt(1);
 			int i=0;
 			for(;i<keyNum;i++){
@@ -730,7 +730,7 @@ public class BPlusTree {
 		}
 		
 	
-		offsetInfo searchKey(byte[] originalkey){
+		OffsetInfo searchKey(byte[] originalkey){
 			int keyNum=block.readInt(1); 
 			if(keyNum==0) return null; 
 		
@@ -771,7 +771,7 @@ public class BPlusTree {
 			byte[] middleKey = block.getBytes(8+pos, myindexInfo.columnLength); 
 			
 			
-            offsetInfo off=new offsetInfo();
+            OffsetInfo off=new OffsetInfo();
             
             off.offsetInfile.add(block.readInt(pos));
             off.offsetInBlock.add(block.readInt(pos+4));
@@ -780,7 +780,7 @@ public class BPlusTree {
             return compareTo(middleKey,key) == 0 ? off : null;  
 		}
 		
-		offsetInfo searchKey(byte[] originalkey, byte[] endkey){
+		OffsetInfo searchKey(byte[] originalkey, byte[] endkey){
 			int keyNum=block.readInt(1); 
 			if(keyNum==0) return null; 
 		
@@ -824,7 +824,7 @@ public class BPlusTree {
 					
             if(compareTo(middleKey,key) != 0) return null;   
             else{
-                offsetInfo off=new offsetInfo();
+                OffsetInfo off=new OffsetInfo();
                 while(compareTo(middleKey,ekey)<=0){
                     off.offsetInfile.add(block.readInt(pos));
                     off.offsetInBlock.add(block.readInt(pos+4));

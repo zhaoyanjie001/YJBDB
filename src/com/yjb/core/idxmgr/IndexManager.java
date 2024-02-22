@@ -12,7 +12,7 @@ import com.yjb.core.common.Constants;
 public class IndexManager{
 	 
 
-	public static boolean createIndex(index indexInfo){
+	public static boolean createIndex(Index indexInfo){
 
     	indexInfo.PickInfo();
         	BPlusTree thisTree=new BPlusTree(indexInfo/*,buf*/); 
@@ -24,7 +24,7 @@ public class IndexManager{
         		String type = CatalogManager.getType(indexInfo.tableName, indexInfo.attriName);
         		byte[] bkey = null;
         		while(count<=CatalogManager.getTupleNum(tableName)){
-            		tuple k = RecordManager.getTuple(tableName,offset);
+            		Tuple k = RecordManager.getTuple(tableName,offset);
             		if(offset%tinb==0)
             			blockOffset++;
             		if(k==null) continue;
@@ -75,9 +75,9 @@ public class IndexManager{
 		return true;
 	}
 	
-	public static Integer searchEqual(index indexInfo, byte[] key) throws Exception{
+	public static Integer searchEqual(Index indexInfo, byte[] key) throws Exception{
     	indexInfo.PickInfo();
-		offsetInfo off=new offsetInfo();
+		OffsetInfo off=new OffsetInfo();
 		try{
 			//Index inx=CatalogManager.getIndex(indexInfo.indexName);
 			BPlusTree thisTree=new BPlusTree(indexInfo,indexInfo.rootNum); 
@@ -92,7 +92,7 @@ public class IndexManager{
 		}
 	}
 	
-	public static Vector<Integer> searchRange(index indexInfo,String startkey, String endkey) throws Exception{
+	public static Vector<Integer> searchRange(Index indexInfo,String startkey, String endkey) throws Exception{
 		String type = CatalogManager.getType(indexInfo.tableName, indexInfo.attriName);
 		byte[] skey = null;
 		byte[] ekey = null;
@@ -107,7 +107,7 @@ public class IndexManager{
 			ekey = endkey.getBytes();
 		}
     	indexInfo.PickInfo();
-		offsetInfo off=new offsetInfo();
+		OffsetInfo off=new OffsetInfo();
 		Vector<Integer> res = new Vector<Integer>();
 		try{
 			//Index inx=CatalogManager.getIndex(indexInfo.indexName);
@@ -126,7 +126,7 @@ public class IndexManager{
 		}
 	}
 	
-	static public void insertKey(index indexInfo,String key,int blockOffset,int offset) throws Exception{
+	static public void insertKey(Index indexInfo,String key,int blockOffset,int offset) throws Exception{
     	indexInfo.PickInfo();
 		String type = CatalogManager.getType(indexInfo.tableName, indexInfo.attriName);
 		byte[] bkey = null;
@@ -147,7 +147,7 @@ public class IndexManager{
 		
 	}
 	
-	static public void deleteKey(index indexInfo,String deleteKey) throws Exception{
+	static public void deleteKey(Index indexInfo,String deleteKey) throws Exception{
     	indexInfo.PickInfo();
 		String type = CatalogManager.getType(indexInfo.tableName, indexInfo.attriName);
 		byte[] bkey = null;

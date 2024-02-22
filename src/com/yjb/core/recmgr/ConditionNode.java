@@ -6,7 +6,7 @@ import com.yjb.core.filmgr.*;
 import com.yjb.core.recmgr.*;
 import com.yjb.core.parse.Comparison;
 
-public class conditionNode {
+public class ConditionNode {
 
 	String tablename;
 	public String attriName;
@@ -15,8 +15,8 @@ public class conditionNode {
 	public String conjunction;
 	public Comparison op;
 	public String value;
-	public conditionNode left;
-	public conditionNode right;
+	public ConditionNode left;
+	public ConditionNode right;
 	boolean constantFlag;
 		
 
@@ -24,7 +24,7 @@ public class conditionNode {
 		return attriName+" "+op+" "+value;
 	}
 	
-	public conditionNode(String attriName, Comparison op, String value,boolean constantFlag) {
+	public ConditionNode(String attriName, Comparison op, String value,boolean constantFlag) {
 		this.conjunction="";
 		this.attriName = attriName;
 		this.op = op;
@@ -39,7 +39,7 @@ public class conditionNode {
 		}
 	}
 
-	public conditionNode(String attriName, String op, String value) {
+	public ConditionNode(String attriName, String op, String value) {
 		this.attriName = attriName;
 		this.conjunction="";
 		this.op = Comparison.parseCompar(op);		
@@ -50,20 +50,20 @@ public class conditionNode {
 
 	}
 
-	public conditionNode(String conjunction) {
+	public ConditionNode(String conjunction) {
 		this.attriName = "";
 		this.op = null;
 		this.value = "";
 		this.conjunction=conjunction;
 	}
 	
-	public conditionNode linkChildNode( conditionNode l, conditionNode r) {
+	public ConditionNode linkChildNode( ConditionNode l, ConditionNode r) {
 		this.left=l;
 		this.right=r;
 		return this;
 	}
 
-	public boolean calc(String tablename, tuple T) {
+	public boolean calc(String tablename, Tuple T) {
 		if (conjunction.equals("and"))
 			return (left.calc(tablename, T) & right.calc(tablename, T));
 		else if (conjunction.equals("or"))

@@ -36,10 +36,10 @@ public class API {
 	}
 
 
-	public static boolean createTable(String tableName, table newTable) {
+	public static boolean createTable(String tableName, Table newTable) {
 		if (RecordManager.createTable(tableName)
 				&& CatalogManager.createTable(newTable)){
-		index newIndex = new index(tableName+"_prikey",tableName, CatalogManager.getPrimaryKey(tableName));
+		Index newIndex = new Index(tableName+"_prikey",tableName, CatalogManager.getPrimaryKey(tableName));
 		IndexManager.createIndex(newIndex);
 		CatalogManager.createIndex(newIndex);
 		return true;
@@ -62,7 +62,7 @@ public class API {
 	}
 
 
-	public static boolean createIndex(index newIndex) {
+	public static boolean createIndex(Index newIndex) {
 		boolean t = IndexManager.createIndex(newIndex);
 		return t & CatalogManager.createIndex(newIndex);
 	}
@@ -75,7 +75,7 @@ public class API {
 
 
 
-	public static boolean insertTuples(String tableName, tuple theTuple) {
+	public static boolean insertTuples(String tableName, Tuple theTuple) {
 
 		int tupleoffset = RecordManager.insert(tableName, theTuple);
 
@@ -86,7 +86,7 @@ public class API {
 				String indexName = CatalogManager.getIndexName(tableName,attriName);
 				if(indexName==null)
 					continue;
-				index indexInfo = CatalogManager.getIndex(indexName);
+				Index indexInfo = CatalogManager.getIndex(indexName);
 				String key = theTuple.units.elementAt(CatalogManager.getAttriOffest(tableName, indexInfo.attriName));
 				IndexManager.insertKey(indexInfo, key, 0, tupleoffset);
 				CatalogManager.updateIndexTable(indexInfo.indexName, indexInfo);
@@ -100,16 +100,16 @@ public class API {
 
 
 	public static int deleteTuples(String tableName,
-			conditionNode conditionNodes) {
+			ConditionNode conditionNodes) {
 		int deleteNum = RecordManager.delete(tableName, conditionNodes);
 		CatalogManager.deleteTupleNum(tableName, deleteNum);
 		return deleteNum;
 	}
 
 
-	public static Vector<tuple> selectTuples(String tableName,
-			Vector<String> attriNames, conditionNode conditionNodes) {
-		Vector<tuple> res = new Vector<tuple>(0);
+	public static Vector<Tuple> selectTuples(String tableName,
+			Vector<String> attriNames, ConditionNode conditionNodes) {
+		Vector<Tuple> res = new Vector<Tuple>(0);
 		if ( conditionNodes!=null && conditionNodes.left == null && conditionNodes.right == null
 				&& conditionNodes.op == Comparison.eq && CatalogManager.getIndexName(tableName,
 						conditionNodes.attriName)!= null) {
@@ -133,17 +133,17 @@ public class API {
 			return res;
 	}
 
-	public static Vector<tuple> selectTuples(String tableName,
-			Vector<String> attriNames, conditionNode conditionNodes,
+	public static Vector<Tuple> selectTuples(String tableName,
+			Vector<String> attriNames, ConditionNode conditionNodes,
 			String orderAttri, boolean ins) {
-		Vector<tuple> res = RecordManager.select(tableName, conditionNodes,
+		Vector<Tuple> res = RecordManager.select(tableName, conditionNodes,
 				orderAttri, ins);
 		if (attriNames != null)
 			return RecordManager.project(res, tableName, attriNames);
 		else
 			return res;
 	}
-	public static Vector<tuple> join(String tableName1,String attributeName1,String tableName2,String attributeName2){
+	public static Vector<Tuple> join(String tableName1,String attributeName1,String tableName2,String attributeName2){
 		return RecordManager.join(tableName1, attributeName1, tableName2, attributeName2);
 	}
 }

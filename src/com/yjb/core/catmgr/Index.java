@@ -1,6 +1,6 @@
 package com.yjb.core.catmgr;
 
-public class index{
+public class Index{
 	public String indexName;
 	public String tableName;
 	public String attriName;
@@ -9,7 +9,7 @@ public class index{
 	public int rootNum;
 	public int blockNum=0;	//number of block the datas of the index occupied in the file index_name.table
 
-	public index(String indexName,String tableName,String attriName, int blockNum, int rootNum){
+	public Index(String indexName,String tableName,String attriName, int blockNum, int rootNum){
 		this.indexName=indexName;
 		this.tableName=tableName;
 		this.attriName=attriName;
@@ -17,7 +17,7 @@ public class index{
 		this.rootNum = rootNum;
 	}
 
-	public index(String indexName,String tableName,String attriName){
+	public Index(String indexName,String tableName,String attriName){
 		this.indexName=indexName;
 		this.tableName=tableName;
 		this.attriName=attriName;

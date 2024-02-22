@@ -5,23 +5,19 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import com.yjb.core.common.Constants;
 
-
-
 public class BufferManager {
-	static final int NUMOFBLOCKS = 20;
-	static final int NOTEXIST = -1;
 
-	private static Block[] blocks = new Block[NUMOFBLOCKS];
+
+	private static Block[] blocks = new Block[Constants.NUMOFBLOCKS];
 	private static int pointer = 0;
-	
 
 	public static void initialize() {
-		for (int i = 0; i < NUMOFBLOCKS; i++)
+		for (int i = 0; i < Constants.NUMOFBLOCKS; i++)
 			blocks[i] = new Block();
 	}
 
 	public static void close() {
-		for (int i = 0; i < NUMOFBLOCKS; i++) {
+		for (int i = 0; i < Constants.NUMOFBLOCKS; i++) {
 			if (blocks[i].valid==true)
 				writeToDisk(i);
 		}
@@ -29,14 +25,14 @@ public class BufferManager {
 	
 	
 	public static void dropblocks(String fileName){
-		for (int i = 0; i < NUMOFBLOCKS; i++)
+		for (int i = 0; i < Constants.NUMOFBLOCKS; i++)
 			if (blocks[i].fileName.equals(fileName))
 				blocks[i].valid=false;												
 	}
 
 	public static Block getBlock(String fileName, int blockOffset) {
 		int num = findBlock(fileName, blockOffset);
-		if (num != NOTEXIST)
+		if (num != Constants.NOTEXIST)
 			return blocks[num];
 		else {
 			num = getFreeBlockNum();
@@ -54,22 +50,22 @@ public class BufferManager {
 	}
 
 	private static int findBlock(String fileName, int blockOffset) {
-		for (int i = 0; i < NUMOFBLOCKS; i++)
+		for (int i = 0; i < Constants.NUMOFBLOCKS; i++)
 			if (blocks[i].valid)
 				if(blocks[i].fileName.equals(fileName))
 					if(blocks[i].blockOffset == blockOffset) {
 				return i;
 			}
-		return NOTEXIST;
+		return Constants.NOTEXIST;
 	}
 
 	private static int getFreeBlockNum() {
 		do {
-			pointer = (pointer + 1) % NUMOFBLOCKS;
-			if (blocks[pointer].reference_bit == true
+			pointer = (pointer + 1) % Constants.NUMOFBLOCKS;
+			if (blocks[pointer].referenceBit == true
 					&& blocks[pointer].fixed == false)
-				blocks[pointer].reference_bit = false;
-			else if (blocks[pointer].reference_bit == false) {
+				blocks[pointer].referenceBit = false;
+			else if (blocks[pointer].referenceBit == false) {
 				writeToDisk(pointer);
 				return pointer;
 			}
@@ -83,7 +79,7 @@ public class BufferManager {
 		blocks[num].fileName = fileName;
 		blocks[num].blockOffset = blockOffset;
 		blocks[num].valid = true;
-		blocks[num].reference_bit = true;
+		blocks[num].referenceBit = true;
 		blocks[num].dirty = false;
 		blocks[num].fixed = false;
 		for (int i = 0; i < Constants.BLOCKSIZE; i++)

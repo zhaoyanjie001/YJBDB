@@ -13,11 +13,11 @@ public class RecordManager {
 	static final char EMPTY = 0;
 
 	
-	public static Vector<tuple> getTuple(String tablename,
+	public static Vector<Tuple> getTuple(String tablename,
 			Vector<Integer> tupleOffsets) {
 		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
-		Vector<tuple> res = new Vector<tuple>(0);
+		Vector<Tuple> res = new Vector<Tuple>(0);
 		for (int ii = 0; ii < tupleOffsets.size(); ii++) {
 			int blockoffset = tupleOffsets.elementAt(ii) / tinb;
 			Block block = BufferManager.getBlock(tablename, blockoffset);
@@ -27,7 +27,7 @@ public class RecordManager {
 			if (block.readInt(byteoffset) >= 0)
 				continue;
 			byteoffset += 4;
-			tuple T = new tuple();
+			Tuple T = new Tuple();
 			
 			for (int i = 0; i < CatalogManager.getTableAttriNum(tablename); i++) {
 				if (CatalogManager.getType(tablename, i).equals("int")) {
@@ -49,7 +49,7 @@ public class RecordManager {
 		return res;
 	}
 
-		public static tuple getTuple(String tablename, int tupleOffset) {
+		public static Tuple getTuple(String tablename, int tupleOffset) {
 		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
 		int blockoffset = tupleOffset / tinb;
@@ -59,7 +59,7 @@ public class RecordManager {
 		if (block.readInt(byteoffset) >= 0)
 			return null;
 		byteoffset += 4;
-		tuple T = new tuple();
+		Tuple T = new Tuple();
 		for (int i = 0; i < CatalogManager.getTableAttriNum(tablename); i++) {
 			if (CatalogManager.getType(tablename, i).equals("int")) {
 				T.units.add(i, String.valueOf(block.readInt(byteoffset)));
@@ -95,7 +95,7 @@ public class RecordManager {
 		return true;
 	}
 
-	public static int insert(String tablename, tuple Tuple) {
+	public static int insert(String tablename, Tuple Tuple) {
 		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
 		Block block1 = BufferManager.getBlock(tablename, 0);
@@ -138,11 +138,11 @@ public class RecordManager {
 
 	
 
-	public static Vector<tuple> project(Vector<tuple> res, String tablename,
+	public static Vector<Tuple> project(Vector<Tuple> res, String tablename,
 			Vector<String> attriNames) {
-		Vector<tuple> newres = new Vector<tuple>(0);
+		Vector<Tuple> newres = new Vector<Tuple>(0);
 		for (int i = 0; i < res.size(); i++) {
-			tuple T = new tuple();
+			Tuple T = new Tuple();
 			for (int j = 0; j < attriNames.size(); j++) {
 				T.units.add(res.elementAt(i).units.elementAt(CatalogManager
 						.getAttriOffest(tablename, attriNames.elementAt(j))));
@@ -152,10 +152,10 @@ public class RecordManager {
 		return newres;
 	}
 
-public static Vector<tuple> select(String tablename, conditionNode condition) {
+public static Vector<Tuple> select(String tablename, ConditionNode condition) {
 		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
-		Vector<tuple> res = new Vector<tuple>(0);
+		Vector<Tuple> res = new Vector<Tuple>(0);
 		Block block = BufferManager.getBlock(tablename, 0);
 		int blockoffset = 0;
 		int tupleoffset = 1;
@@ -172,7 +172,7 @@ public static Vector<tuple> select(String tablename, conditionNode condition) {
 				continue;
 			} else
 				byteoffset += 4;
-			tuple T = new tuple();
+			Tuple T = new Tuple();
 			for (int i = 0; i < CatalogManager.getTableAttriNum(tablename); i++) {
 				if (CatalogManager.getType(tablename, i).equals("int")) {
 					T.units.add(i, String.valueOf(block.readInt(byteoffset)));
@@ -197,9 +197,9 @@ public static Vector<tuple> select(String tablename, conditionNode condition) {
 		return res;
 	}
 
-	public static Vector<tuple> select(String tablename,
-			conditionNode condition, String orderAttriName, boolean isInc) {
-		Vector<tuple> res = select(tablename, condition);
+	public static Vector<Tuple> select(String tablename,
+			ConditionNode condition, String orderAttriName, boolean isInc) {
+		Vector<Tuple> res = select(tablename, condition);
 		if (isInc)
 			compareParaInc = true;
 		else
@@ -214,9 +214,9 @@ public static Vector<tuple> select(String tablename, conditionNode condition) {
 	static boolean compareParaInc;
 	static String compareParaType;
 
-	static class MyCompare implements Comparator<tuple> 
+	static class MyCompare implements Comparator<Tuple> 
 	{
-		public int compare(tuple t1, tuple t2) {
+		public int compare(Tuple t1, Tuple t2) {
 			String num1 = t1.units.elementAt(comparePara);
 			String num2 = t2.units.elementAt(comparePara);
 			if (compareParaType.equals("int"))
@@ -238,7 +238,7 @@ public static Vector<tuple> select(String tablename, conditionNode condition) {
 		}
 	}
 
-	public static int delete(String tablename, conditionNode condition) {
+	public static int delete(String tablename, ConditionNode condition) {
 		final int tinb = Constants.BLOCKSIZE
 				/ (SIZEINT + CatalogManager.getTupleLength(tablename));
 		Block block1 = BufferManager.getBlock(tablename, 0);
@@ -261,7 +261,7 @@ public static Vector<tuple> select(String tablename, conditionNode condition) {
 				continue;
 			} else
 				byteoffset += 4;
-			tuple T = new tuple();
+			Tuple T = new Tuple();
 			int pointer = byteoffset - 4;
 			for (int i = 0; i < CatalogManager.getTableAttriNum(tablename); i++) {
 				if (CatalogManager.getType(tablename, i).equals("int")) {
@@ -286,7 +286,7 @@ public static Vector<tuple> select(String tablename, conditionNode condition) {
 						String indexname = CatalogManager.getIndexName(tablename, CatalogManager.getAttriName(tablename, i));
 						if(indexname==null)
 							continue;
-						index tmpindex = CatalogManager.getIndex(indexname);
+						Index tmpindex = CatalogManager.getIndex(indexname);
 						if(indexname!=null){
 							IndexManager.deleteKey(tmpindex, T.units.elementAt(i));
 						}
@@ -310,11 +310,11 @@ public static Vector<tuple> select(String tablename, conditionNode condition) {
 	}
 
 	
-	public static Vector<tuple> join(String tableName1,
+	public static Vector<Tuple> join(String tableName1,
 			String attributeName1, String tableName2, String attributeName2) {
-		Vector<tuple> res1 = select(tableName1, null);
-		Vector<tuple> res2 = select(tableName2, null);
-		Vector<tuple> res = new Vector<tuple>(0);
+		Vector<Tuple> res1 = select(tableName1, null);
+		Vector<Tuple> res2 = select(tableName2, null);
+		Vector<Tuple> res = new Vector<Tuple>(0);
 		for (int i = 0; i < res1.size(); i++)
 			for (int j = 0; j < res2.size(); j++) {
 				if (res1.elementAt(i).units.elementAt(
@@ -323,7 +323,7 @@ public static Vector<tuple> select(String tablename, conditionNode condition) {
 						res2.elementAt(j).units.elementAt((CatalogManager
 								.getAttriOffest(tableName2, attributeName2))))) {
 					
-					tuple T = new tuple();
+					Tuple T = new Tuple();
 					for (int k = 0; k < CatalogManager
 							.getTableAttriNum(tableName1); k++) {
 						T.units.addElement(res1.elementAt(i).units.elementAt(k));

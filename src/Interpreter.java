@@ -94,7 +94,7 @@ public class Interpreter {
 					thetoken=lexer.scan();
 					if(thetoken.tag==Tag.ID){													 
 						    String tmpTableName=thetoken.toString();
-							Vector<attribute>tmpAttributes=new Vector<attribute>();
+							Vector<Attribute>tmpAttributes=new Vector<Attribute>();
 							String tmpPrimaryKey=null;
 							 if(CatalogManager.isTableExist(tmpTableName)){
 								 semaErrMsg="The table "+tmpTableName+" already exists";
@@ -155,10 +155,10 @@ public class Interpreter {
 										 }
 										 else ;
 										 if(thetoken.toString().equals(",")){											 
-											 tmpAttributes.addElement(new attribute(tmpAttriName,tmpType,tmpLength,tmpIsU));
+											 tmpAttributes.addElement(new Attribute(tmpAttriName,tmpType,tmpLength,tmpIsU));
 										 }
 										 else if(thetoken.toString().equals(")")){
-											 tmpAttributes.addElement(new attribute(tmpAttriName,tmpType,tmpLength,tmpIsU));
+											 tmpAttributes.addElement(new Attribute(tmpAttriName,tmpType,tmpLength,tmpIsU));
 											 break;
 										 }
 										 else{
@@ -224,7 +224,7 @@ public class Interpreter {
 									 continue;
 								 }
 								 if(isSemaCorrect){
-									 if(API.createTable(tmpTableName,new table(tmpTableName,tmpAttributes,tmpPrimaryKey)))
+									 if(API.createTable(tmpTableName,new Table(tmpTableName,tmpAttributes,tmpPrimaryKey)))
 									 System.out.println("create table "+tmpTableName+" succeeded");
 									 else
 										 System.out.println("Error: create table failed");
@@ -289,7 +289,7 @@ public class Interpreter {
 										 if(thetoken.toString().equals(")")&&lexer.scan().toString().equals(";")){
 											 
 											 if(isSemaCorrect){
-												 if(API.createIndex(new index(tmpIndexName,tmpTableName,tmpAttriName)))
+												 if(API.createIndex(new Index(tmpIndexName,tmpTableName,tmpAttriName)))
 												  System.out.println("create index "+tmpIndexName+" on "+tmpTableName+" ("+tmpAttriName+") succeeded.");
 												 else
 													 System.out.println("Error:create index failed");
@@ -447,7 +447,7 @@ public class Interpreter {
 										 String tmpAttriName=CatalogManager.getAttriName(tmpTableName, i);
 						
 										 if(CatalogManager.inUniqueKey(tmpTableName, tmpAttriName)){
-											 conditionNode tmpCondition=new conditionNode(tmpAttriName,"=",thetoken.toString());
+											 ConditionNode tmpCondition=new ConditionNode(tmpAttriName,"=",thetoken.toString());
 											
 											 if(isSemaCorrect&&API.selectTuples(tmpTableName,null,tmpCondition).size()!=0){
 												 isSemaCorrect=false;
@@ -505,7 +505,7 @@ public class Interpreter {
 									
 									 
 									 if(isSemaCorrect){
-										 if(API.insertTuples(tmpTableName,new tuple(units)))
+										 if(API.insertTuples(tmpTableName,new Tuple(units)))
 										 	System.out.println("insert into "+tmpTableName+" succeeded.");
 										 else
 											 System.out.println("Error:insert into "+tmpTableName+" failed.");
@@ -557,7 +557,7 @@ public class Interpreter {
 						 thetoken=lexer.scan();
 						 if(thetoken.tag==Tag.WHERE){
 							 
-							 conditionNode tmpConditionNodes=ParsingCondition(lexer,tmpTableName,";");
+							 ConditionNode tmpConditionNodes=ParsingCondition(lexer,tmpTableName,";");
 							 if(thetoken.toString().equals(";")){
 								
 								 if(isSemaCorrect&&isSynCorrect){
@@ -689,7 +689,7 @@ public class Interpreter {
 																System.out.print("\t"+CatalogManager.getAttriName(tmpTableName2, i));
 															}
 														    System.out.println();
-														    Vector<tuple> seleteTuples=API.join(tmpName1[0],tmpName1[1],tmpName2[0],tmpName2[1]);
+														    Vector<Tuple> seleteTuples=API.join(tmpName1[0],tmpName1[1],tmpName2[0],tmpName2[1]);
 														    for(int i=0;i<seleteTuples.size();i++){
 																System.out.println(seleteTuples.get(i).getString());
 															}
@@ -724,7 +724,7 @@ public class Interpreter {
 									 
 									 continue;
 								 }
-								 conditionNode tmpConditionNode=ParsingCondition(lexer,tmpTableName,";");
+								 ConditionNode tmpConditionNode=ParsingCondition(lexer,tmpTableName,";");
 								 if(thetoken.toString().equals(";")){
 									 if(isSemaCorrect&&isSynCorrect){
 										 
@@ -912,7 +912,7 @@ public class Interpreter {
    		 
    	}
  
-private static void showSelectRes(String tmpTableName,Vector<String> tmpAttriNames,conditionNode tmpConditionNode,String tmpOrderAttriName,boolean order){
+private static void showSelectRes(String tmpTableName,Vector<String> tmpAttriNames,ConditionNode tmpConditionNode,String tmpOrderAttriName,boolean order){
 		if(tmpAttriNames==null)
 			for(int i=0;i<CatalogManager.getTableAttriNum(tmpTableName);i++){ 
 				System.out.print("\t"+CatalogManager.getAttriName(tmpTableName, i));
@@ -921,7 +921,7 @@ private static void showSelectRes(String tmpTableName,Vector<String> tmpAttriNam
 			for(int i=0;i<tmpAttriNames.size();i++)
 				System.out.print("\t"+tmpAttriNames.get(i));
 		System.out.println();
-		Vector<tuple> seleteTuples;
+		Vector<Tuple> seleteTuples;
 		if(tmpOrderAttriName==null)
 			seleteTuples=API.selectTuples(tmpTableName,tmpAttriNames, tmpConditionNode);		
 		else{
@@ -964,7 +964,7 @@ private static Vector<String> ParsingProjection(Lexer lexer) throws IOException{
 	   }
    }
 
-private static conditionNode ParsingExpression(Lexer lexer,String tmpTableName) throws IOException{
+private static ConditionNode ParsingExpression(Lexer lexer,String tmpTableName) throws IOException{
 	   String tmpAttriName;Comparison op;String tmpValue;	
 	   	boolean constantFlag = false;
 	   if(thetoken.tag==Tag.ID){
@@ -1029,7 +1029,7 @@ private static conditionNode ParsingExpression(Lexer lexer,String tmpTableName) 
 				   
 				    
 			   }
-			   return new conditionNode(tmpAttriName,op,tmpValue,constantFlag);
+			   return new ConditionNode(tmpAttriName,op,tmpValue,constantFlag);
 			   
 		   }
 		   else{
@@ -1044,10 +1044,10 @@ private static conditionNode ParsingExpression(Lexer lexer,String tmpTableName) 
 	return null;	   
    }
 
-private static conditionNode ParsingCondition(Lexer lexer,String tmpTableName,String endtoken)throws IOException {
+private static ConditionNode ParsingCondition(Lexer lexer,String tmpTableName,String endtoken)throws IOException {
 	  
-	   conditionNode tmpConditionRoot = null;
-	   conditionNode tmpExpresstion = null,tmpConjunction;
+	   ConditionNode tmpConditionRoot = null;
+	   ConditionNode tmpExpresstion = null,tmpConjunction;
 	   thetoken=lexer.scan();
 	   boolean flag=false;
 	   if(thetoken.toString().equals("(")){
@@ -1068,7 +1068,7 @@ private static conditionNode ParsingCondition(Lexer lexer,String tmpTableName,St
 	   thetoken=lexer.scan();	
 	   while(!thetoken.toString().equals(endtoken)&&thetoken.tag!=Tag.ORDER){
 		   if(thetoken.tag==Tag.AND){
-			   tmpConjunction=new conditionNode("and");
+			   tmpConjunction=new ConditionNode("and");
 			   thetoken=lexer.scan();
 			   if(thetoken.toString().equals("(")){
 				   tmpExpresstion=ParsingCondition(lexer,tmpTableName,")");
@@ -1099,7 +1099,7 @@ private static conditionNode ParsingCondition(Lexer lexer,String tmpTableName,St
 				   
 		   }
 		   else if(thetoken.tag==Tag.OR){
-			   tmpConjunction=new conditionNode("or");
+			   tmpConjunction=new ConditionNode("or");
 			   thetoken=lexer.scan();
 			   if(thetoken.toString().equals("(")){
 				   tmpExpresstion=ParsingCondition(lexer,tmpTableName,")");

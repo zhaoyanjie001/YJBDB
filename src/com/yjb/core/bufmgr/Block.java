@@ -8,20 +8,19 @@ import java.io.IOException;
 
 import com.yjb.core.common.Constants;
 
-public class Block{
+public class Block {
 
-	String fileName="";
-	public int blockOffset=0;
+	String fileName = "";
+	public int blockOffset = 0;
 	boolean dirty = false;
 	public boolean valid = false;
 	boolean fixed = false;
-	boolean reference_bit = false;
+	boolean referenceBit = false;
 
 	public byte[] data = new byte[Constants.BLOCKSIZE];
 
-
 	public byte[] readData() {
-		reference_bit = true;
+		referenceBit = true;
 		return data;
 	}
 
@@ -32,13 +31,13 @@ public class Block{
 		for (int i = 0; i < size; i++)
 			data[byteOffset + i] = inputdata[i];
 		dirty = true;
-		reference_bit = true;
+		referenceBit = true;
 		return true;
 	}
 
 	public boolean writeData() {
 		dirty = true;
-		reference_bit = true;
+		referenceBit = true;
 		return true;
 	}
 
@@ -62,19 +61,18 @@ public class Block{
 		try {
 			res = dintput.readInt();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		reference_bit = true;
-		return res;		
+		referenceBit = true;
+		return res;
 	}
+
 	public void writeInt(int offset, int num) {
 		ByteArrayOutputStream boutput = new ByteArrayOutputStream();
 		DataOutputStream doutput = new DataOutputStream(boutput);
 		try {
 			doutput.writeInt(num);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		byte[] temp = boutput.toByteArray();
@@ -83,7 +81,7 @@ public class Block{
 		data[offset + 2] = temp[2];
 		data[offset + 3] = temp[3];
 		dirty = true;
-		reference_bit = true;
+		referenceBit = true;
 	}
 
 	public float readFloat(int offset) {
@@ -98,19 +96,18 @@ public class Block{
 		try {
 			res = dintput.readFloat();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		reference_bit = true;
+		referenceBit = true;
 		return res;
 	}
+
 	public void writeFloat(int offset, float num) {
 		ByteArrayOutputStream boutput = new ByteArrayOutputStream();
 		DataOutputStream doutput = new DataOutputStream(boutput);
 		try {
 			doutput.writeFloat(num);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		byte[] temp = boutput.toByteArray();
@@ -119,29 +116,27 @@ public class Block{
 		data[offset + 2] = temp[2];
 		data[offset + 3] = temp[3];
 		dirty = true;
-		reference_bit = true;
+		referenceBit = true;
 	}
 
 	public String readString(int offset, int length) {
 		byte[] buf = new byte[length];
 		for (int i = 0; i < length; i++)
 			buf[i] = data[offset++];
-		reference_bit = true;
+		referenceBit = true;
 		String res = new String(buf);
-		res=res.replaceAll("&", "");
+		res = res.replaceAll("&", "");
 		return res;
 	}
-	
-	
+
 	public String readString(int offset) {
 		byte[] buf = new byte[4];
 		for (int i = 0; i < 4; i++)
 			buf[i] = data[offset++];
-		reference_bit = true;
+		referenceBit = true;
 		String res = new String(buf);
 		return res;
 	}
-	
 
 	public void writeString(int offset, String num, int length) {
 		byte[] buf = num.getBytes();
@@ -150,42 +145,42 @@ public class Block{
 			data[offset] = buf[j];
 			offset += 1;
 		}
-		for (; j < length; j++){
+		for (; j < length; j++) {
 			data[offset] = '&';
 			offset += 1;
-		}			
+		}
 		dirty = true;
-		reference_bit = true;
+		referenceBit = true;
 	}
-
 
 	public int recordNum = 0;
 	public Block next = null;
 	public Block previous = null;
-	public  void writeInternalKey(int pos,byte[] key,int offset) {
-		writeData(pos,key,key.length);
-		writeInt(pos+key.length,offset);
-		dirty=true;
+	public void writeInternalKey(int pos, byte[] key, int offset) {
+		writeData(pos, key, key.length);
+		writeInt(pos + key.length, offset);
+		dirty = true;
 	}
 
-	public byte[] getBytes(int pos,int length){
+	public byte[] getBytes(int pos, int length) {
 		byte[] b = new byte[length];
-		for(int i =0;i<length;i++){
-			b[i]=data[pos+i];
+		for (int i = 0; i < length; i++) {
+			b[i] = data[pos + i];
 		}
 		return b;
 	}
 
-	public  void setInternalKey(int pos,byte[] key,int offset) {
-		writeData(pos,key,key.length);
-		writeInt(pos+key.length,offset);
-		dirty=true;
+	public void setInternalKey(int pos, byte[] key, int offset) {
+		writeData(pos, key, key.length);
+		writeInt(pos + key.length, offset);
+		dirty = true;
 	}
-	public  void setKeydata(int pos,byte[] insertKey,int blockOffset,int offset) {
-		writeInt(pos,blockOffset);
-		writeInt(pos+4,offset);	
-		writeData(pos+8,insertKey, insertKey.length);
-		dirty=true;
-	} 
-    
+
+	public void setKeydata(int pos, byte[] insertKey, int blockOffset, int offset) {
+		writeInt(pos, blockOffset);
+		writeInt(pos + 4, offset);
+		writeData(pos + 8, insertKey, insertKey.length);
+		dirty = true;
+	}
+
 }

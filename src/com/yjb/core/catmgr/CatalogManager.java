@@ -4,8 +4,8 @@ import java.io.*;
 import java.util.*;
 
 public class CatalogManager {
-	private static Hashtable<String,table> tables=new Hashtable<String, table>() ;
-	private static Hashtable<String,index> indexes=new Hashtable<String, index>();
+	private static Hashtable<String,Table> tables=new Hashtable<String, Table>() ;
+	private static Hashtable<String,Index> indexes=new Hashtable<String, Index>();
 	private static String tableFilename="table catalog";
 	private static String indexFilename="index catalog";
 	
@@ -27,7 +27,7 @@ public class CatalogManager {
 			tmpAttriName=dis.readUTF();
 			tmpIndexBlockNum=dis.readInt();
 			tmpRootNum = dis.readInt();
-			indexes.put(tmpIndexName, new index(tmpIndexName,tmpTableName,tmpAttriName,tmpIndexBlockNum,tmpRootNum));				
+			indexes.put(tmpIndexName, new Index(tmpIndexName,tmpTableName,tmpAttriName,tmpIndexBlockNum,tmpRootNum));				
 		}		
 		dis.close();		
 			
@@ -42,8 +42,8 @@ public class CatalogManager {
 		int tmpIndexNum,tmpAttriNum,tmpTupleNum;
 		
 		while(dis.available()>0) {
-			Vector<attribute> tmpAttributes=new Vector<attribute>();
-			Vector<index> tmpIndexes=new Vector<index> ();
+			Vector<Attribute> tmpAttributes=new Vector<Attribute>();
+			Vector<Index> tmpIndexes=new Vector<Index> ();
 			tmpTableName=dis.readUTF();
 			tmpPriKey=dis.readUTF();
 			tmpTupleNum=dis.readInt();//dos.writeInt(tmpTable.tupleNum);
@@ -52,7 +52,7 @@ public class CatalogManager {
 				String tmpIndexName,tmpAttriName;
 				tmpIndexName=dis.readUTF();
 				tmpAttriName=dis.readUTF();
-				tmpIndexes.addElement(new index(tmpIndexName,tmpTableName,tmpAttriName));
+				tmpIndexes.addElement(new Index(tmpIndexName,tmpTableName,tmpAttriName));
 			}
 			tmpAttriNum=dis.readInt();
 			for(int i=0;i<tmpAttriNum;i++){
@@ -62,9 +62,9 @@ public class CatalogManager {
 				tmpType=dis.readUTF();
 				tmpLength=dis.readInt();
 				tmpIsU=dis.readBoolean();
-				tmpAttributes.addElement(new attribute(tmpAttriName,tmpType,tmpLength,tmpIsU));
+				tmpAttributes.addElement(new Attribute(tmpAttriName,tmpType,tmpLength,tmpIsU));
 			}
-			tables.put(tmpTableName, new table(tmpTableName,tmpAttributes,tmpIndexes,tmpPriKey,tmpTupleNum));
+			tables.put(tmpTableName, new Table(tmpTableName,tmpAttributes,tmpIndexes,tmpPriKey,tmpTupleNum));
 
 		}		
 		dis.close();
@@ -81,8 +81,8 @@ public class CatalogManager {
 		if(file.exists())file.delete();
 		FileOutputStream fos = new FileOutputStream(file);
 		DataOutputStream dos = new DataOutputStream(fos);	
-		index tmpIndex;
-		Enumeration<index> en = indexes.elements();
+		Index tmpIndex;
+		Enumeration<Index> en = indexes.elements();
 		while(en.hasMoreElements()) {
 			tmpIndex=en.nextElement();	
 			dos.writeUTF(tmpIndex.indexName);
@@ -100,8 +100,8 @@ public class CatalogManager {
 		//if(file.exists())file.d;
 		FileOutputStream fos = new FileOutputStream(file);
 		DataOutputStream dos = new DataOutputStream(fos);	
-		table tmpTable;
-		Enumeration<table> en = tables.elements();
+		Table tmpTable;
+		Enumeration<Table> en = tables.elements();
         while(en.hasMoreElements()) {
         	tmpTable=en.nextElement();
         	dos.writeUTF(tmpTable.tableName);
@@ -109,13 +109,13 @@ public class CatalogManager {
         	dos.writeInt(tmpTable.tupleNum);
         	dos.writeInt(tmpTable.indexNum);
         	for(int i=0;i<tmpTable.indexNum;i++){
-        		index tmpIndex=tmpTable.indexes.get(i);
+        		Index tmpIndex=tmpTable.indexes.get(i);
         		dos.writeUTF(tmpIndex.indexName);
         		dos.writeUTF(tmpIndex.attriName);
            	}
         	dos.writeInt(tmpTable.attriNum);
         	for(int i=0;i<tmpTable.attriNum;i++){
-        		attribute tmpAttri=tmpTable.attributes.get(i);
+        		Attribute tmpAttri=tmpTable.attributes.get(i);
         		dos.writeUTF(tmpAttri.attriName);
         		dos.writeUTF(tmpAttri.type);
         		dos.writeInt(tmpAttri.length);
@@ -132,8 +132,8 @@ public class CatalogManager {
 	}
 	public static void showIndexCatalog() {
 		// TODO Auto-generated method stub
-		index tmpIndex;
-		Enumeration<index> en = indexes.elements();
+		Index tmpIndex;
+		Enumeration<Index> en = indexes.elements();
 		int cnt=1;
 		System.out.println("There are "+indexes.size()+" indexes in the database: ");
         System.out.println("\tIndex name\tTable name\tAttribute name:");
@@ -144,10 +144,10 @@ public class CatalogManager {
 	}
 	public static void showTableCatalog() {
 		// TODO Auto-generated method stub
-		table tmpTable;
-		index tmpIndex;
-		attribute tmpAttribute;
-		Enumeration<table> en = tables.elements();
+		Table tmpTable;
+		Index tmpIndex;
+		Attribute tmpAttribute;
+		Enumeration<Table> en = tables.elements();
 		int cnt=1;
 		System.out.println("There are "+tables.size()+" tables in the database: ");
         while(en.hasMoreElements()) {
@@ -171,10 +171,10 @@ public class CatalogManager {
            }
         }      		
 	}
-	public static table getTable(String tableName){
+	public static Table getTable(String tableName){
 		return tables.get(tableName);
 	}
-	public static index getIndex(String indexName){
+	public static Index getIndex(String indexName){
 		return indexes.get(indexName);
 	}	
 	public static String getPrimaryKey(String tableName) {
@@ -191,7 +191,7 @@ public class CatalogManager {
 	}
 	public static boolean isPrimaryKey(String tableName,String attriName){
 		if(isTableExist(tableName)){
-			table tmpTable=getTable(tableName);
+			Table tmpTable=getTable(tableName);
 			if(tmpTable.primaryKey.equals(attriName))return true;
 			else return false;
 		}
@@ -202,10 +202,10 @@ public class CatalogManager {
 	}
 	public static boolean inUniqueKey(String tableName,String attriName){
 		if(isTableExist(tableName)){
-			table tmpTable=getTable(tableName);
+			Table tmpTable=getTable(tableName);
 			int i;
 			for(i=0;i<tmpTable.attributes.size();i++){
-				attribute tmpAttribute=tmpTable.attributes.get(i);
+				Attribute tmpAttribute=tmpTable.attributes.get(i);
 				if(tmpAttribute.attriName.equals(attriName)){
 					return tmpAttribute.isUnique;
 				}
@@ -221,7 +221,7 @@ public class CatalogManager {
 	}
 	public static boolean isIndexKey(String tableName,String attriName){
 		if(isTableExist(tableName)){
-			table tmpTable=getTable(tableName);
+			Table tmpTable=getTable(tableName);
 			if(isAttributeExist(tableName,attriName)){
 				for(int i=0;i<tmpTable.indexes.size();i++){
 					if(tmpTable.indexes.get(i).attriName.equals(attriName))
@@ -244,7 +244,7 @@ public class CatalogManager {
 		return indexes.containsKey(indexName);
 	}
 	public static boolean isAttributeExist(String tableName,String attriName){
-		table tmpTable=getTable(tableName);
+		Table tmpTable=getTable(tableName);
 		for(int i=0;i<tmpTable.attributes.size();i++){
 			if(tmpTable.attributes.get(i).attriName.equals(attriName))
 				return true;
@@ -253,7 +253,7 @@ public class CatalogManager {
 	}
 	public static String getIndexName(String tableName,String attriName){
 		if(isTableExist(tableName)){
-			table tmpTable=getTable(tableName);
+			Table tmpTable=getTable(tableName);
 			if(isAttributeExist(tableName,attriName)){
 				for(int i=0;i<tmpTable.indexes.size();i++){
 					if(tmpTable.indexes.get(i).attriName.equals(attriName))
@@ -272,8 +272,8 @@ public class CatalogManager {
 		return tables.get(tableName).attributes.get(i).attriName;
 	}
 	public static int getAttriOffest(String tableName,String attriName){
-		table tmpTable=tables.get(tableName);
-		attribute tmpAttri;
+		Table tmpTable=tables.get(tableName);
+		Attribute tmpAttri;
 		for(int i=0;i<tmpTable.attributes.size();i++){
 			tmpAttri=tmpTable.attributes.get(i);
 			if(tmpAttri.attriName.equals(attriName))
@@ -283,8 +283,8 @@ public class CatalogManager {
 		return -1;
 	}
 	public static String getType(String tableName,String attriName){//用于where
-		table tmpTable=tables.get(tableName);
-		attribute tmpAttri;
+		Table tmpTable=tables.get(tableName);
+		Attribute tmpAttri;
 		for(int i=0;i<tmpTable.attributes.size();i++){
 			tmpAttri=tmpTable.attributes.get(i);
 			if(tmpAttri.attriName.equals(attriName))
@@ -294,8 +294,8 @@ public class CatalogManager {
 		return null;
 	}
 	public static int getLength(String tableName,String attriName){//用于where
-		table tmpTable=tables.get(tableName);
-		attribute tmpAttri;
+		Table tmpTable=tables.get(tableName);
+		Attribute tmpAttri;
 		for(int i=0;i<tmpTable.attributes.size();i++){
 			tmpAttri=tmpTable.attributes.get(i);
 			if(tmpAttri.attriName.equals(attriName))
@@ -305,12 +305,12 @@ public class CatalogManager {
 		return -1;
 	}
 	public static String getType(String tableName,int i){
-		table tmpTable=tables.get(tableName);
+		Table tmpTable=tables.get(tableName);
 		//System.out.println(tmpTable.attributes.get(i).type+tmpTable.attributes.get(i).attriName);
 		return tmpTable.attributes.get(i).type;
 	}
 	public static int getLength(String tableName,int i){
-		table tmpTable=tables.get(tableName);
+		Table tmpTable=tables.get(tableName);
 		return tmpTable.attributes.get(i).length;
 	}
 
@@ -321,11 +321,11 @@ public class CatalogManager {
 	public static void deleteTupleNum(String tableName,int num){
 		tables.get(tableName).tupleNum-=num;
 	}
-	public static boolean updateIndexTable(String indexName,index indexinfo){
+	public static boolean updateIndexTable(String indexName,Index indexinfo){
 		indexes.replace(indexName, indexinfo);
 		return true;
 	}
-	public static boolean isAttributeExist(Vector<attribute> attributes, String attriName) {
+	public static boolean isAttributeExist(Vector<Attribute> attributes, String attriName) {
 		for(int i=0;i<attributes.size();i++){
 			if(attributes.get(i).attriName.equals(attriName))
 				return true;
@@ -333,7 +333,7 @@ public class CatalogManager {
 		return false;
 	} 
 	
-	public static boolean createTable(table newTable){		
+	public static boolean createTable(Table newTable){		
 		try{
 			tables.put(newTable.tableName, newTable);
 			//indexes.put(newTable.indexes.firstElement().indexName, newTable.indexes.firstElement());
@@ -348,7 +348,7 @@ public class CatalogManager {
 
 	public static boolean dropTable(String tableName){
 		try{
-			table tmpTable=tables.get(tableName);
+			Table tmpTable=tables.get(tableName);
 			for(int i=0;i<tmpTable.indexes.size();i++){ 
 				indexes.remove(tmpTable.indexes.get(i).indexName);
 			}			
@@ -361,9 +361,9 @@ public class CatalogManager {
 		}
 	}
 
-	public static boolean createIndex(index newIndex){
+	public static boolean createIndex(Index newIndex){
 		try{
-		table tmpTable=getTable(newIndex.tableName);
+		Table tmpTable=getTable(newIndex.tableName);
 		//更新tableCatalog
 		tmpTable.indexes.addElement(newIndex);
 		tmpTable.indexNum=tmpTable.indexes.size();
@@ -380,8 +380,8 @@ public class CatalogManager {
 	public static boolean dropIndex(String indexName){
 	
 		try{
-			index tmpIndex=getIndex(indexName);
-			table tmpTable=getTable(tmpIndex.tableName);				
+			Index tmpIndex=getIndex(indexName);
+			Table tmpTable=getTable(tmpIndex.tableName);				
 			tmpTable.indexes.remove(tmpIndex) ;
 			tmpTable.indexNum=tmpTable.indexes.size();
 			indexes.remove(indexName);

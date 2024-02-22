@@ -2,20 +2,20 @@ package com.yjb.core.catmgr;
 
 import java.util.Vector;
 
-public class table{
+public class Table{
 	String tableName;			
 	String primaryKey;			
-	Vector<attribute>attributes;
-	Vector<index> indexes;			
+	Vector<Attribute>attributes;
+	Vector<Index> indexes;			
 	int indexNum;				
 	int attriNum;				
 	int tupleNum;				
 	int tupleLength;			
 
-	public table(String tableName,Vector<attribute> attributes,String primaryKey){
+	public Table(String tableName,Vector<Attribute> attributes,String primaryKey){
 		this.tableName=tableName;
 		this.primaryKey=primaryKey;
-		this.indexes=new Vector<index>();				
+		this.indexes=new Vector<Index>();				
 		this.indexNum=0;		
 		this.attributes=attributes;
 		this.attriNum=attributes.size();
@@ -27,7 +27,7 @@ public class table{
 		}
 	}
 
-	public table(String tableName, Vector<attribute> attributes, Vector<index> indexes, String primaryKey,int tupleNum) {//initial table
+	public Table(String tableName, Vector<Attribute> attributes, Vector<Index> indexes, String primaryKey,int tupleNum) {//initial table
 		this.tableName=tableName;
 		this.primaryKey=primaryKey;
 		this.attributes=attributes;
