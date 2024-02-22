@@ -1,4 +1,4 @@
-package recmgr;
+package com.yjb.core.recmgr;
 
 
 import java.util.Vector;

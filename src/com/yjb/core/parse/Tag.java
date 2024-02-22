@@ -1,4 +1,4 @@
-package parse;
+package com.yjb.core.parse;
 
 public class Tag {  
     public final static int  

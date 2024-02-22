@@ -1,4 +1,4 @@
-package catmgr;
+package com.yjb.core.catmgr;
 
 import java.io.*;
 import java.util.*;

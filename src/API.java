@@ -1,11 +1,12 @@
 import java.io.IOException;
 import java.util.Vector;
 
-import parse.Comparison;
-import com.yjb.bufmgr.BufferManager;
-import com.yjb.catmgr.*;
-import com.yjb.idxmgr.IndexManager;
-import com.yjb.recmgr.*;
+import com.yjb.core.bufmgr.*;
+import com.yjb.core.catmgr.*;
+import com.yjb.core.filmgr.*;
+import com.yjb.core.recmgr.*;
+import com.yjb.core.idxmgr.*;
+import com.yjb.core.parse.*;
 
 
 public class API {

@@ -1,4 +1,4 @@
-package idxmgr;
+package com.yjb.core.idxmgr;
 
 import java.util.Vector;
 

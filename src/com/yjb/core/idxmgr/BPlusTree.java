@@ -1,4 +1,4 @@
-package idxmgr;
+package com.yjb.core.idxmgr;
 
 import com.yjb.core.bufmgr.*;
 import com.yjb.core.catmgr.*;

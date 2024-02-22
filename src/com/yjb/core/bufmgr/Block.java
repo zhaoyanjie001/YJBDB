@@ -1,4 +1,4 @@
-package bufmgr;
+package com.yjb.core.bufmgr;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

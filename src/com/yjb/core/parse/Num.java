@@ -1,4 +1,4 @@
-package parse;
+package com.yjb.core.parse;
 
 public class Num extends Token{  
     public final double value;  

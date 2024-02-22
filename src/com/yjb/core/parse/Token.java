@@ -1,4 +1,4 @@
-package parse;
+package com.yjb.core.parse;
 
 public class Token {  
     public final int tag;  

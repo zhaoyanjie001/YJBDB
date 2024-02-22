@@ -1,4 +1,4 @@
-package catmgr;
+package com.yjb.core.catmgr;
 
 
 public class attribute{

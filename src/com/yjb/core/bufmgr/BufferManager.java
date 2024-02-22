@@ -1,4 +1,4 @@
-package bufmgr;
+package com.yjb.core.bufmgr;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package parse;
+package com.yjb.core.parse;
 public class Comparison extends Word{  
 	    public Comparison(String s, int tag) {  
 	        super(s, tag);  

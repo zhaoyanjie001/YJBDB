@@ -5,16 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
-import com.yjb.catmgr.CatalogManager;
-import com.yjb.catmgr.attribute;
-import com.yjb.catmgr.index;
-import com.yjb.catmgr.table;
-import com.yjb.recmgr.conditionNode;
-import com.yjb.recmgr.tuple;
-import lexer.Comparison;
-import lexer.Lexer;
-import lexer.Tag;
-import lexer.Token;
+
+import com.yjb.core.bufmgr.*;
+import com.yjb.core.catmgr.*;
+import com.yjb.core.filmgr.*;
+import com.yjb.core.recmgr.*;
+import com.yjb.core.parse.*;
 
 public class Interpreter {
    private static Token thetoken;

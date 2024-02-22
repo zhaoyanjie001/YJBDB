@@ -1,4 +1,4 @@
-package filmgr;
+package com.yjb.core.filmgr;
 
 import java.io.File;
 

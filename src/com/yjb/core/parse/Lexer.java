@@ -1,4 +1,4 @@
-package parse;
+package com.yjb.core.parse;
 import java.io.*;  
 import java.util.*;  
   
