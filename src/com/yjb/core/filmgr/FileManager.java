@@ -19,7 +19,7 @@ public class FileManager {
 			else
 				throw new Exception("The new file already exists!");
 		} catch (Exception ex) {
-			System.out.println("无法创建新文件！");
+			System.out.println("create file failed");
 			ex.printStackTrace();
 		}
 	}
