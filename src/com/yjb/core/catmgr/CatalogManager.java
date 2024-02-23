@@ -3,19 +3,18 @@ package com.yjb.core.catmgr;
 import java.io.*;
 import java.util.*;
 
+import com.yjb.core.utils.PropUtils;
+
 public class CatalogManager {
 	private static Hashtable<String,Table> tables=new Hashtable<String, Table>() ;
 	private static Hashtable<String,Index> indexes=new Hashtable<String, Index>();
-	private static String tableFilename="table catalog";
-	private static String indexFilename="index catalog";
 	
 	public static void InitialCatalog() throws IOException {
 		InitialTableCatalog();
 		InitialIndexCatalog();
 	}
 	private static void InitialIndexCatalog() throws IOException  {
-		// TODO Auto-generated method stub
-		File file=new File(indexFilename);
+		File file=new File(PropUtils.getValue("indexFileName"));
 		if(!file.exists()) return;
 		FileInputStream fis = new FileInputStream(file);
 		DataInputStream dis = new DataInputStream(fis);	
@@ -32,41 +31,43 @@ public class CatalogManager {
 		dis.close();		
 			
 	}
-	private static void InitialTableCatalog() throws IOException {
-		// TODO Auto-generated method stub
-		File file=new File(tableFilename);
-		if(!file.exists()) return;
-		FileInputStream fis = new FileInputStream(file);
-		DataInputStream dis = new DataInputStream(fis);	
-		String tmpTableName,tmpPriKey;	
-		int tmpIndexNum,tmpAttriNum,tmpTupleNum;
-		
-		while(dis.available()>0) {
-			Vector<Attribute> tmpAttributes=new Vector<Attribute>();
-			Vector<Index> tmpIndexes=new Vector<Index> ();
-			tmpTableName=dis.readUTF();
-			tmpPriKey=dis.readUTF();
-			tmpTupleNum=dis.readInt();//dos.writeInt(tmpTable.tupleNum);
-			tmpIndexNum=dis.readInt();
-			for(int i=0;i<tmpIndexNum;i++){
-				String tmpIndexName,tmpAttriName;
-				tmpIndexName=dis.readUTF();
-				tmpAttriName=dis.readUTF();
-				tmpIndexes.addElement(new Index(tmpIndexName,tmpTableName,tmpAttriName));
-			}
-			tmpAttriNum=dis.readInt();
-			for(int i=0;i<tmpAttriNum;i++){
-				String tmpAttriName,tmpType;
-				int tmpLength;boolean tmpIsU;
-				tmpAttriName=dis.readUTF();
-				tmpType=dis.readUTF();
-				tmpLength=dis.readInt();
-				tmpIsU=dis.readBoolean();
-				tmpAttributes.addElement(new Attribute(tmpAttriName,tmpType,tmpLength,tmpIsU));
-			}
-			tables.put(tmpTableName, new Table(tmpTableName,tmpAttributes,tmpIndexes,tmpPriKey,tmpTupleNum));
 
-		}		
+	private static void InitialTableCatalog() throws IOException {
+		File file = new File(PropUtils.getValue("tableFileName"));
+		if (!file.exists())
+			return;
+		FileInputStream fis = new FileInputStream(file);
+		DataInputStream dis = new DataInputStream(fis);
+		String tmpTableName, tmpPriKey;
+		int tmpIndexNum, tmpAttriNum, tmpTupleNum;
+
+		while (dis.available() > 0) {
+			Vector<Attribute> tmpAttributes = new Vector<Attribute>();
+			Vector<Index> tmpIndexes = new Vector<Index>();
+			tmpTableName = dis.readUTF();
+			tmpPriKey = dis.readUTF();
+			tmpTupleNum = dis.readInt();
+			tmpIndexNum = dis.readInt();
+			for (int i = 0; i < tmpIndexNum; i++) {
+				String tmpIndexName, tmpAttriName;
+				tmpIndexName = dis.readUTF();
+				tmpAttriName = dis.readUTF();
+				tmpIndexes.addElement(new Index(tmpIndexName, tmpTableName, tmpAttriName));
+			}
+			tmpAttriNum = dis.readInt();
+			for (int i = 0; i < tmpAttriNum; i++) {
+				String tmpAttriName, tmpType;
+				int tmpLength;
+				boolean tmpIsU;
+				tmpAttriName = dis.readUTF();
+				tmpType = dis.readUTF();
+				tmpLength = dis.readInt();
+				tmpIsU = dis.readBoolean();
+				tmpAttributes.addElement(new Attribute(tmpAttriName, tmpType, tmpLength, tmpIsU));
+			}
+			tables.put(tmpTableName, new Table(tmpTableName, tmpAttributes, tmpIndexes, tmpPriKey, tmpTupleNum));
+
+		}
 		dis.close();
 	}
 
@@ -77,7 +78,7 @@ public class CatalogManager {
 	private static void storeIndexCatalog() throws IOException {
 		// TODO Auto-generated method stub		
 		
-		File file=new File(indexFilename);
+		File file=new File(PropUtils.getValue("indexFileName"));
 		if(file.exists())file.delete();
 		FileOutputStream fos = new FileOutputStream(file);
 		DataOutputStream dos = new DataOutputStream(fos);	
@@ -96,7 +97,7 @@ public class CatalogManager {
 	}
 	private static void storeTableCatalog() throws IOException {
 		// TODO Auto-generated method stub
-		File file=new File(tableFilename);
+		File file=new File(PropUtils.getValue("tableFileName"));
 		//if(file.exists())file.d;
 		FileOutputStream fos = new FileOutputStream(file);
 		DataOutputStream dos = new DataOutputStream(fos);	

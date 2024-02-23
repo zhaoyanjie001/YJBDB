@@ -9,8 +9,6 @@ import com.yjb.core.parse.*;
 
 public class API {
 
-
-
 	public static void close() throws IOException {
 		CatalogManager.storeCatalog();
 		BufferManager.close();
