@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import com.yjb.core.common.Constants;
+import com.yjb.core.logmgr.LogWriter;
 
 public class Block {
 
@@ -25,13 +26,14 @@ public class Block {
 	}
 
 	public boolean writeData(int byteOffset, byte inputdata[], int size) {
-
+		LogWriter.write("writeData: start");
 		if (byteOffset + size >= 4096)
 			return false;
 		for (int i = 0; i < size; i++)
 			data[byteOffset + i] = inputdata[i];
 		dirty = true;
 		referenceBit = true;
+		LogWriter.write("writeData: end");
 		return true;
 	}
 
